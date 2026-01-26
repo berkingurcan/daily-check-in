@@ -15,7 +15,7 @@ import { CheckInButton } from './checkin-ui-button'
 import { CheckInHabitSetup } from './checkin-ui-habit-setup'
 import { CheckInProgressGrid } from './checkin-ui-progress-grid'
 import { MintSuccessModal } from './mint-success-modal'
-import { DailyBadge, HABIT_CATEGORIES, HabitCategory, getDayBadge } from './types'
+import { DailyBadge, HABIT_CATEGORIES, HabitCategory, TOTAL_DAYS, getDayBadge } from './types'
 import { useCheckInTransaction } from './use-checkin-transaction'
 import { useHabitStorage } from './use-habit-storage'
 
@@ -40,6 +40,7 @@ export function CheckInFeature() {
   const [isCreating, setIsCreating] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [isConfirming, setIsConfirming] = useState(false)
+  const [isAdvancing, setIsAdvancing] = useState(false)
 
   // Mint success modal state
   const [showSuccessModal, setShowSuccessModal] = useState(false)
@@ -131,8 +132,15 @@ export function CheckInFeature() {
   const handleSuccessModalClose = async () => {
     setShowSuccessModal(false)
     setMintResult(null)
-    // Automatically advance to the next day so user can check in immediately
-    await advanceToNextDay()
+  }
+
+  const handleNextDay = async () => {
+    setIsAdvancing(true)
+    try {
+      await advanceToNextDay()
+    } finally {
+      setIsAdvancing(false)
+    }
   }
 
   const currentDay = getCurrentDayNumber()
@@ -257,9 +265,12 @@ export function CheckInFeature() {
             <CheckInButton
               dayNumber={currentDay}
               onCheckIn={handleCheckInPress}
+              onNextDay={handleNextDay}
               isLoading={checkInMutation.isPending}
               isCompleted={todayCheckIn?.completed || false}
               isDisabled={!todayCheckIn}
+              isAdvancing={isAdvancing}
+              isLastDay={currentDay === TOTAL_DAYS}
             />
           </View>
         )}

@@ -8,13 +8,24 @@ import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-nat
 interface CheckInButtonProps {
   dayNumber: number
   onCheckIn: () => void
+  onNextDay?: () => void
   isLoading: boolean
   isCompleted: boolean
   isDisabled: boolean
+  isAdvancing?: boolean
+  isLastDay?: boolean
 }
 
-export function CheckInButton({ dayNumber, onCheckIn, isLoading, isCompleted, isDisabled }: CheckInButtonProps) {
-
+export function CheckInButton({
+  dayNumber,
+  onCheckIn,
+  onNextDay,
+  isLoading,
+  isCompleted,
+  isDisabled,
+  isAdvancing,
+  isLastDay,
+}: CheckInButtonProps) {
   if (isCompleted) {
     return (
       <View style={styles.completedContainer}>
@@ -29,12 +40,41 @@ export function CheckInButton({ dayNumber, onCheckIn, isLoading, isCompleted, is
             Complete
           </AppText>
         </View>
-        <View style={styles.helperContainer}>
-          <UiIconSymbol name="clock.fill" size={14} color={Colors.text.tertiary} />
-          <AppText variant="caption" color="tertiary">
-            Come back tomorrow for Day {dayNumber + 1}
-          </AppText>
-        </View>
+        {!isLastDay && onNextDay && (
+          <TouchableOpacity
+            style={styles.nextDayButton}
+            onPress={onNextDay}
+            disabled={isAdvancing}
+            activeOpacity={0.8}
+          >
+            <LinearGradient
+              colors={['rgba(0, 217, 181, 0.15)', 'rgba(0, 217, 181, 0.05)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.nextDayGradient}
+            >
+              {isAdvancing ? (
+                <ActivityIndicator size="small" color={Colors.primary.default} />
+              ) : (
+                <>
+                  <UiIconSymbol name="arrow.right.circle.fill" size={20} color={Colors.primary.default} />
+                  <AppText variant="label" color="primary">
+                    Continue to Day {dayNumber + 1}
+                  </AppText>
+                  <UiIconSymbol name="chevron.right" size={16} color={Colors.primary.default} />
+                </>
+              )}
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
+        {isLastDay && (
+          <View style={styles.helperContainer}>
+            <UiIconSymbol name="trophy.fill" size={14} color={Colors.semantic.success} />
+            <AppText variant="caption" color="success">
+              Final day complete!
+            </AppText>
+          </View>
+        )}
       </View>
     )
   }
@@ -185,5 +225,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
     marginTop: Spacing.xs,
+  },
+  nextDayButton: {
+    marginTop: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.primary.muted,
+  },
+  nextDayGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xl,
+    minWidth: 220,
   },
 })
