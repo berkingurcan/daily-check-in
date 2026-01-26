@@ -1,10 +1,10 @@
-import React from 'react'
-import { Modal, View, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
-import { BlurView } from 'expo-blur'
-import { LinearGradient } from 'expo-linear-gradient'
 import { AppText } from '@/components/app-text'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
-import { Colors, Spacing, BorderRadius, Shadows } from '@/constants/theme'
+import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
+import { BlurView } from 'expo-blur'
+import { LinearGradient } from 'expo-linear-gradient'
+import React from 'react'
+import { ActivityIndicator, Modal, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
 
 interface CheckInConfirmModalProps {
   visible: boolean
@@ -69,7 +69,7 @@ export function CheckInConfirmModal({
 
               {/* Message */}
               <AppText variant="body" color="secondary" style={styles.message}>
-                You are about to record your check-in on the blockchain.
+                You are about to mint an NFT badge and record your check-in on the blockchain.
               </AppText>
 
               {/* Fee card */}
@@ -78,18 +78,18 @@ export function CheckInConfirmModal({
                   <View style={styles.feeLabel}>
                     <UiIconSymbol name="bolt.fill" size={16} color={Colors.primary.default} />
                     <AppText variant="bodySm" color="secondary">
-                      Transaction Fee
+                      NFT Mint Fee
                     </AppText>
                   </View>
                   <AppText variant="h4" style={styles.feeAmount}>
-                    {fee.toFixed(2)} SOL
+                    {fee.toFixed(4)} SOL
                   </AppText>
                 </View>
                 <View style={styles.feeDivider} />
                 <View style={styles.feeInfo}>
                   <UiIconSymbol name="info.circle" size={14} color={Colors.text.tertiary} />
                   <AppText variant="caption" color="tertiary">
-                    Fees increase daily to strengthen your commitment
+                    Minting an NFT badge + commission fee (increases daily)
                   </AppText>
                 </View>
               </View>

@@ -31,6 +31,7 @@ const getEndpoint = (network: ClusterNetwork): string => {
 export class AppConfig {
   static name = 'Daily Check-In'
   static uri = 'https://dailycheckin.app'
+  static symbol = 'DCIN'
 
   static defaultNetwork = getNetworkFromEnv()
 
@@ -40,8 +41,26 @@ export class AppConfig {
 
   static totalDays = 12
 
+  /**
+   * Calculate mint fee for a given day (linear progression)
+   * Day 1 = 0.02 SOL, Day 12 = 0.07 SOL
+   */
   static getCheckInFee = (dayNumber: number): number => {
-    return dayNumber * 0.01
+    const minFee = 0.02
+    const maxFee = 0.07
+    const increment = (maxFee - minFee) / (AppConfig.totalDays - 1)
+    return Number((minFee + (dayNumber - 1) * increment).toFixed(4))
+  }
+
+  /**
+   * Get total mint fee if user mints all days
+   */
+  static getTotalMintFee = (): number => {
+    let total = 0
+    for (let day = 1; day <= AppConfig.totalDays; day++) {
+      total += AppConfig.getCheckInFee(day)
+    }
+    return Number(total.toFixed(4))
   }
 
   static clusters: Cluster[] = [
@@ -65,3 +84,4 @@ export class AppConfig {
     },
   ]
 }
+

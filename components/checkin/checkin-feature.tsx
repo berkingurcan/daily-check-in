@@ -1,24 +1,27 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native'
-import { useMobileWallet } from '@wallet-ui/react-native-web3js'
-import Snackbar from 'react-native-snackbar'
-import { LinearGradient } from 'expo-linear-gradient'
 import { AppPage } from '@/components/app-page'
 import { AppText } from '@/components/app-text'
+import { useCluster } from '@/components/cluster/cluster-provider'
 import { WalletUiButtonConnect } from '@/components/solana/wallet-ui-button-connect'
-import { Colors, Spacing, BorderRadius, Shadows } from '@/constants/theme'
-import { useHabitStorage } from './use-habit-storage'
-import { useCheckInTransaction } from './use-checkin-transaction'
-import { CheckInHabitSetup } from './checkin-ui-habit-setup'
-import { CheckInButton } from './checkin-ui-button'
-import { CheckInProgressGrid } from './checkin-ui-progress-grid'
-import { CheckInConfirmModal } from './checkin-confirm-modal'
-import { HabitCategory, HABIT_CATEGORIES } from './types'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 import { AppConfig } from '@/constants/app-config'
+import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
+import { useMobileWallet } from '@wallet-ui/react-native-web3js'
+import { LinearGradient } from 'expo-linear-gradient'
+import React, { useState } from 'react'
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native'
+import Snackbar from 'react-native-snackbar'
+import { CheckInConfirmModal } from './checkin-confirm-modal'
+import { CheckInButton } from './checkin-ui-button'
+import { CheckInHabitSetup } from './checkin-ui-habit-setup'
+import { CheckInProgressGrid } from './checkin-ui-progress-grid'
+import { MintSuccessModal } from './mint-success-modal'
+import { DailyBadge, HABIT_CATEGORIES, HabitCategory, getDayBadge } from './types'
+import { useCheckInTransaction } from './use-checkin-transaction'
+import { useHabitStorage } from './use-habit-storage'
 
 export function CheckInFeature() {
   const { account } = useMobileWallet()
+  const { selectedCluster } = useCluster()
   const {
     habit,
     loading,
@@ -35,6 +38,15 @@ export function CheckInFeature() {
   const [isCreating, setIsCreating] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [isConfirming, setIsConfirming] = useState(false)
+
+  // Mint success modal state
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [mintResult, setMintResult] = useState<{
+    mintAddress: string
+    signature: string
+    dayNumber: number
+    badge: DailyBadge
+  } | null>(null)
 
   const checkInMutation = useCheckInTransaction({
     address: account?.address!,
@@ -70,17 +82,26 @@ export function CheckInFeature() {
 
   const handleConfirmCheckIn = async () => {
     const dayNumber = getCurrentDayNumber()
-    if (!dayNumber) return
+    if (!dayNumber || !habit) return
 
     setIsConfirming(true)
     try {
-      const result = await checkInMutation.mutateAsync({ dayNumber })
-      await recordCheckIn(dayNumber, result.signature, result.feePaid)
-      setShowConfirmModal(false)
-      Snackbar.show({
-        text: `Day ${dayNumber} check-in complete!`,
-        duration: Snackbar.LENGTH_LONG,
+      const result = await checkInMutation.mutateAsync({
+        dayNumber,
+        habitName: habit.name,
       })
+      await recordCheckIn(dayNumber, result.signature, result.feePaid, result.mintAddress)
+      setShowConfirmModal(false)
+
+      // Show mint success modal
+      const badge = getDayBadge(dayNumber, habit.name)
+      setMintResult({
+        mintAddress: result.mintAddress,
+        signature: result.signature,
+        dayNumber,
+        badge,
+      })
+      setShowSuccessModal(true)
     } catch (error: any) {
       Snackbar.show({
         text: error?.message || 'Check-in failed. Please try again.',
@@ -91,8 +112,20 @@ export function CheckInFeature() {
     }
   }
 
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false)
+    setMintResult(null)
+  }
+
   const currentDay = getCurrentDayNumber()
   const fee = currentDay ? AppConfig.getCheckInFee(currentDay) : 0
+
+  // Determine network for explorer links
+  const getNetwork = (): 'devnet' | 'mainnet-beta' | 'testnet' => {
+    if (selectedCluster.name.toLowerCase().includes('mainnet')) return 'mainnet-beta'
+    if (selectedCluster.name.toLowerCase().includes('testnet')) return 'testnet'
+    return 'devnet'
+  }
 
   // Not connected state
   if (!account) {
@@ -220,6 +253,19 @@ export function CheckInFeature() {
         fee={fee}
         loading={isConfirming}
       />
+
+      {/* Mint Success Modal */}
+      {mintResult && (
+        <MintSuccessModal
+          visible={showSuccessModal}
+          onClose={handleSuccessModalClose}
+          dayNumber={mintResult.dayNumber}
+          badge={mintResult.badge}
+          mintAddress={mintResult.mintAddress}
+          signature={mintResult.signature}
+          network={getNetwork()}
+        />
+      )}
     </AppPage>
   )
 }
@@ -353,3 +399,4 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
 })
+

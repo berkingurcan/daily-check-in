@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useCallback, useEffect, useState } from 'react'
-import { Habit, CheckInDay, HabitCategory, TOTAL_DAYS } from './types'
+import { CheckInDay, Habit, HabitCategory, TOTAL_DAYS } from './types'
 
 const HABIT_STORAGE_KEY = 'daily-checkin-habit'
 
@@ -78,11 +78,13 @@ export function useHabitStorage() {
   )
 
   const recordCheckIn = useCallback(
-    async (dayNumber: number, transactionSignature: string, feePaid: number) => {
+    async (dayNumber: number, transactionSignature: string, feePaid: number, mintAddress?: string) => {
       if (!habit) throw new Error('No active habit')
 
       const updatedCheckIns = habit.checkIns.map((checkIn) =>
-        checkIn.dayNumber === dayNumber ? { ...checkIn, completed: true, transactionSignature, feePaid } : checkIn,
+        checkIn.dayNumber === dayNumber
+          ? { ...checkIn, completed: true, transactionSignature, feePaid, mintAddress }
+          : checkIn,
       )
 
       const updatedHabit = { ...habit, checkIns: updatedCheckIns }
