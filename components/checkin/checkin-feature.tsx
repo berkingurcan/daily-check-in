@@ -1,3 +1,4 @@
+import { useGetBalance } from '@/components/account/use-get-balance'
 import { AppPage } from '@/components/app-page'
 import { AppText } from '@/components/app-text'
 import { useCluster } from '@/components/cluster/cluster-provider'
@@ -5,6 +6,7 @@ import { WalletUiButtonConnect } from '@/components/solana/wallet-ui-button-conn
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 import { AppConfig } from '@/constants/app-config'
 import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
+import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useMobileWallet } from '@wallet-ui/react-native-web3js'
 import { LinearGradient } from 'expo-linear-gradient'
 import React, { useState } from 'react'
@@ -14,10 +16,13 @@ import { CheckInConfirmModal } from './checkin-confirm-modal'
 import { CheckInButton } from './checkin-ui-button'
 import { CheckInHabitSetup } from './checkin-ui-habit-setup'
 import { CheckInProgressGrid } from './checkin-ui-progress-grid'
+import { InsufficientBalanceModal } from './insufficient-balance-modal'
 import { MintSuccessModal } from './mint-success-modal'
 import { DailyBadge, HABIT_CATEGORIES, HabitCategory, TOTAL_DAYS, getDayBadge } from './types'
 import { useCheckInTransaction } from './use-checkin-transaction'
 import { useHabitStorage } from './use-habit-storage'
+
+const ESTIMATED_TX_FEE = 0.02 // SOL for NFT mint transaction fees (includes rent)
 
 export function CheckInFeature() {
   const { account } = useMobileWallet()
@@ -55,9 +60,15 @@ export function CheckInFeature() {
     address: account?.address!,
   })
 
+  // Get user balance for insufficient balance check
+  const balanceQuery = useGetBalance({ address: account?.address!, enabled: !!account })
+
+  // Insufficient balance modal state
+  const [showInsufficientBalanceModal, setShowInsufficientBalanceModal] = useState(false)
+
   const handleRefresh = async () => {
     setRefreshing(true)
-    await refresh()
+    await Promise.all([refresh(), balanceQuery.refetch()])
     setRefreshing(false)
   }
 
@@ -93,7 +104,22 @@ export function CheckInFeature() {
   }
 
   const handleCheckInPress = () => {
-    // Directly trigger check-in without confirmation modal
+    // Check balance before attempting to mint
+    const dayNumber = getCurrentDayNumber()
+    if (!dayNumber) return
+
+    const mintFee = AppConfig.getCheckInFee(dayNumber)
+    const requiredAmount = mintFee + ESTIMATED_TX_FEE
+    const currentBalance = balanceQuery.data ?? 0
+    const balanceInSol = currentBalance / LAMPORTS_PER_SOL
+
+    if (balanceInSol < requiredAmount) {
+      // Show insufficient balance modal
+      setShowInsufficientBalanceModal(true)
+      return
+    }
+
+    // Proceed with check-in if balance is sufficient
     handleConfirmCheckIn()
   }
 
@@ -301,6 +327,16 @@ export function CheckInFeature() {
           network={getNetwork()}
         />
       )}
+
+      {/* Insufficient Balance Modal */}
+      <InsufficientBalanceModal
+        visible={showInsufficientBalanceModal}
+        onClose={() => setShowInsufficientBalanceModal(false)}
+        currentBalance={balanceQuery.data ?? 0}
+        requiredAmount={currentDay ? AppConfig.getCheckInFee(currentDay) : 0}
+        walletAddress={account?.address?.toBase58() ?? ''}
+        network={getNetwork()}
+      />
     </AppPage>
   )
 }
