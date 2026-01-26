@@ -137,14 +137,31 @@ export function useHabitStorage() {
   const getTodayCheckIn = useCallback((): CheckInDay | null => {
     if (!habit) return null
     const today = getDateString()
-    return habit.checkIns.find((checkIn) => checkIn.date === today) || null
+    // Prioritize uncompleted days for today (the active day to check-in)
+    const uncompleted = habit.checkIns.find(
+      (checkIn) => checkIn.date === today && !checkIn.completed
+    )
+    if (uncompleted) return uncompleted
+    // If all today's days are complete, return the last completed one for today
+    const todayCompletedDays = habit.checkIns.filter(
+      (checkIn) => checkIn.date === today && checkIn.completed
+    )
+    return todayCompletedDays.length > 0
+      ? todayCompletedDays[todayCompletedDays.length - 1]
+      : null
   }, [habit])
 
   const getCurrentDayNumber = useCallback((): number => {
     if (!habit) return 0
     const today = getDateString()
-    const checkIn = habit.checkIns.find((c) => c.date === today)
-    return checkIn?.dayNumber || 0
+    // Prioritize uncompleted days for today (the active day to check-in)
+    const uncompleted = habit.checkIns.find(
+      (c) => c.date === today && !c.completed
+    )
+    if (uncompleted) return uncompleted.dayNumber
+    // If all today's days are complete, return the last completed one's day number
+    const todayDays = habit.checkIns.filter((c) => c.date === today)
+    return todayDays.length > 0 ? todayDays[todayDays.length - 1].dayNumber : 0
   }, [habit])
 
   const getProgress = useCallback(() => {
