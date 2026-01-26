@@ -69,9 +69,14 @@ export function CheckInFeature() {
   // Ref to track pending InteractionManager handles for cleanup
   const interactionHandleRef = useRef<ReturnType<typeof InteractionManager.runAfterInteractions> | null>(null)
 
-  // Cleanup pending interactions on unmount
+  // Track mounted state to prevent state updates after unmount
+  const isMounted = useRef(true)
+
+  // Cleanup on unmount - prevent state updates and cancel pending interactions
   useEffect(() => {
+    isMounted.current = true
     return () => {
+      isMounted.current = false
       interactionHandleRef.current?.cancel()
     }
   }, [])
@@ -79,24 +84,32 @@ export function CheckInFeature() {
   const handleRefresh = async () => {
     setRefreshing(true)
     await Promise.all([refresh(), balanceQuery.refetch()])
-    setRefreshing(false)
+    if (isMounted.current) {
+      setRefreshing(false)
+    }
   }
 
   const handleCreateHabit = async (name: string, category: HabitCategory) => {
     setIsCreating(true)
     try {
       await createHabit(name, category)
-      Snackbar.show({
-        text: 'Habit created! Start your Day 1 check-in.',
-        duration: Snackbar.LENGTH_LONG,
-      })
+      if (isMounted.current) {
+        Snackbar.show({
+          text: 'Habit created! Start your Day 1 check-in.',
+          duration: Snackbar.LENGTH_LONG,
+        })
+      }
     } catch {
-      Snackbar.show({
-        text: 'Failed to create habit',
-        duration: Snackbar.LENGTH_SHORT,
-      })
+      if (isMounted.current) {
+        Snackbar.show({
+          text: 'Failed to create habit',
+          duration: Snackbar.LENGTH_SHORT,
+        })
+      }
     } finally {
-      setIsCreating(false)
+      if (isMounted.current) {
+        setIsCreating(false)
+      }
     }
   }
 
@@ -144,6 +157,9 @@ export function CheckInFeature() {
         habitName: habit.name,
       })
       await recordCheckIn(dayNumber, result.signature, result.feePaid, result.mintAddress)
+
+      if (!isMounted.current) return
+
       setShowConfirmModal(false)
 
       // Show mint success modal
@@ -156,23 +172,31 @@ export function CheckInFeature() {
       })
       setShowSuccessModal(true)
     } catch (error: any) {
-      Snackbar.show({
-        text: error?.message || 'Check-in failed. Please try again.',
-        duration: Snackbar.LENGTH_LONG,
-      })
+      if (isMounted.current) {
+        Snackbar.show({
+          text: error?.message || 'Check-in failed. Please try again.',
+          duration: Snackbar.LENGTH_LONG,
+        })
+      }
     } finally {
-      setIsConfirming(false)
+      if (isMounted.current) {
+        setIsConfirming(false)
+      }
     }
   }
 
   const handleSuccessModalClose = useCallback(() => {
+    if (!isMounted.current) return
+
     setShowSuccessModal(false)
     // Cancel any pending interaction before scheduling a new one
     interactionHandleRef.current?.cancel()
     // Delay clearing state until after modal animation completes
     // This prevents Fabric race conditions during unmount
     interactionHandleRef.current = InteractionManager.runAfterInteractions(() => {
-      setMintResult(null)
+      if (isMounted.current) {
+        setMintResult(null)
+      }
     })
   }, [])
 
@@ -181,7 +205,9 @@ export function CheckInFeature() {
     try {
       await advanceToNextDay()
     } finally {
-      setIsAdvancing(false)
+      if (isMounted.current) {
+        setIsAdvancing(false)
+      }
     }
   }
 
@@ -348,7 +374,7 @@ export function CheckInFeature() {
         onClose={() => setShowInsufficientBalanceModal(false)}
         currentBalance={balanceQuery.data ?? 0}
         requiredAmount={currentDay ? AppConfig.getCheckInFee(currentDay) : 0}
-        walletAddress={account?.address?.toBase58() ?? ''}
+        walletAddress={account?.address?.toString() ?? ''}
         network={getNetwork()}
       />
     </AppPage>

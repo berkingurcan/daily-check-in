@@ -7,9 +7,10 @@ import { AppText } from '@/components/app-text'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
 import * as Linking from 'expo-linking'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useCallback } from 'react'
 import {
     Animated,
+    InteractionManager,
     Modal,
     Pressable,
     StyleSheet,
@@ -39,6 +40,8 @@ export function MintSuccessModal({
 }: MintSuccessModalProps) {
     const scaleAnim = useRef(new Animated.Value(0.95)).current
     const fadeAnim = useRef(new Animated.Value(0)).current
+    const isMounted = useRef(true)
+    const animationRef = useRef<Animated.CompositeAnimation | null>(null)
 
     // Safe defaults for rendering when props are null (modal hidden)
     const safeDayNumber = dayNumber ?? 1
@@ -46,12 +49,23 @@ export function MintSuccessModal({
     const safeMintAddress = mintAddress ?? ''
     const safeSignature = signature ?? ''
 
+    // Cleanup on unmount - stop animations to prevent Fabric race conditions
     useEffect(() => {
-        if (visible) {
+        isMounted.current = true
+        return () => {
+            isMounted.current = false
+            animationRef.current?.stop()
+            scaleAnim.stopAnimation()
+            fadeAnim.stopAnimation()
+        }
+    }, [])
+
+    useEffect(() => {
+        if (visible && isMounted.current) {
             scaleAnim.setValue(0.95)
             fadeAnim.setValue(0)
 
-            Animated.parallel([
+            animationRef.current = Animated.parallel([
                 Animated.spring(scaleAnim, {
                     toValue: 1,
                     tension: 200,
@@ -63,7 +77,9 @@ export function MintSuccessModal({
                     duration: 200,
                     useNativeDriver: true,
                 }),
-            ]).start()
+            ])
+
+            animationRef.current.start()
         }
     }, [visible])
 
