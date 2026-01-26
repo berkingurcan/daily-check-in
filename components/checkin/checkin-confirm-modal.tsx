@@ -85,7 +85,7 @@ export function CheckInConfirmModal({
               {/* Buttons */}
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.cancelButton} onPress={onClose} disabled={loading} activeOpacity={0.7}>
-                  <AppText variant="button" style={styles.cancelButtonText}>
+                  <AppText variant="buttonLg" style={styles.cancelButtonText}>
                     Cancel
                   </AppText>
                 </TouchableOpacity>
@@ -105,12 +105,9 @@ export function CheckInConfirmModal({
                     {loading ? (
                       <ActivityIndicator size="small" color={Colors.text.inverse} />
                     ) : (
-                      <>
-                        <UiIconSymbol name="checkmark" size={18} color={Colors.text.inverse} />
-                        <AppText variant="button" style={styles.confirmButtonText}>
-                          Confirm
-                        </AppText>
-                      </>
+                      <AppText variant="buttonLg" style={styles.confirmButtonText}>
+                        Confirm
+                      </AppText>
                     )}
                   </LinearGradient>
                 </TouchableOpacity>
@@ -236,36 +233,34 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     width: '100%',
-    gap: Spacing.sm,
+    gap: Spacing.md,
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: Colors.background.secondary,
+    backgroundColor: Colors.surface.elevated,
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.xl,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border.subtle,
-    minHeight: 48,
+    minHeight: 56,
   },
   cancelButtonText: {
     color: Colors.text.secondary,
   },
   confirmButton: {
-    flex: 1,
-    borderRadius: BorderRadius.lg,
+    flex: 1.5,
+    borderRadius: BorderRadius.xl,
     overflow: 'hidden',
   },
   confirmButtonGradient: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
     paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
-    minHeight: 48,
+    paddingHorizontal: Spacing.lg,
+    minHeight: 56,
   },
   confirmButtonText: {
     color: Colors.text.inverse,

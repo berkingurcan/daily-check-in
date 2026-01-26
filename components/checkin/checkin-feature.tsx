@@ -8,7 +8,7 @@ import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
 import { useMobileWallet } from '@wallet-ui/react-native-web3js'
 import { LinearGradient } from 'expo-linear-gradient'
 import React, { useState } from 'react'
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native'
+import { Alert, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Snackbar from 'react-native-snackbar'
 import { CheckInConfirmModal } from './checkin-confirm-modal'
 import { CheckInButton } from './checkin-ui-button'
@@ -32,6 +32,7 @@ export function CheckInFeature() {
     getProgress,
     isJourneyComplete,
     refresh,
+    deleteHabit,
   } = useHabitStorage()
 
   const [refreshing, setRefreshing] = useState(false)
@@ -74,6 +75,19 @@ export function CheckInFeature() {
     } finally {
       setIsCreating(false)
     }
+  }
+
+  const handleReset = () => {
+    Alert.alert('Reset Journey', 'Are you sure you want to reset your progress? This action cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Reset',
+        style: 'destructive',
+        onPress: async () => {
+          await deleteHabit()
+        },
+      },
+    ])
   }
 
   const handleCheckInPress = () => {
@@ -191,14 +205,20 @@ export function CheckInFeature() {
         showsVerticalScrollIndicator={false}
       >
         {/* Habit Header */}
-        <View style={styles.habitHeader}>
-          <AppText variant="h2">{habit.name}</AppText>
-          <View style={styles.categoryBadge}>
-            <UiIconSymbol name={categoryInfo?.icon as any} size={14} color={Colors.primary.default} />
-            <AppText variant="caption" color="primary">
-              {categoryInfo?.label || habit.category}
-            </AppText>
+        <View style={styles.headerRow}>
+          <TouchableOpacity onPress={handleReset} hitSlop={12} style={styles.resetButton}>
+            <UiIconSymbol name="arrow.counterclockwise" size={20} color={Colors.text.tertiary} />
+          </TouchableOpacity>
+          <View style={styles.habitHeader}>
+            <AppText variant="h2">{habit.name}</AppText>
+            <View style={styles.categoryBadge}>
+              <UiIconSymbol name={categoryInfo?.icon as any} size={14} color={Colors.primary.default} />
+              <AppText variant="caption" color="primary">
+                {categoryInfo?.label || habit.category}
+              </AppText>
+            </View>
           </View>
+          <View style={styles.resetButtonPlaceholder} />
         </View>
 
         {/* Progress Summary */}
@@ -333,9 +353,22 @@ const styles = StyleSheet.create({
     borderColor: Colors.border.subtle,
     borderTopColor: Colors.primary.default,
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.md,
+  },
+  resetButton: {
+    padding: Spacing.xs,
+  },
+  resetButtonPlaceholder: {
+    width: 28, // Matches icon size + padding
+  },
   habitHeader: {
     alignItems: 'center',
     gap: Spacing.sm,
+    flex: 1,
   },
   categoryBadge: {
     flexDirection: 'row',

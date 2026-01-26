@@ -101,35 +101,14 @@ export function CheckInHabitSetup({ onCreateHabit, isLoading }: HabitSetupProps)
           </View>
         ) : null}
 
-        {/* Fee Info Box */}
+        {/* App Info Box */}
         <View style={styles.infoBox}>
           <View style={styles.infoHeader}>
             <UiIconSymbol name="info.circle.fill" size={18} color={Colors.primary.default} />
-            <AppText variant="label">Fee Structure</AppText>
+            <AppText variant="label">How it works</AppText>
           </View>
-          <View style={styles.feeScale}>
-            <View style={styles.feeItem}>
-              <AppText variant="caption" color="secondary">
-                Day 1
-              </AppText>
-              <AppText variant="label" color="primary">
-                0.02 SOL
-              </AppText>
-            </View>
-            <View style={styles.feeArrow}>
-              <UiIconSymbol name="arrow.right" size={14} color={Colors.text.tertiary} />
-            </View>
-            <View style={styles.feeItem}>
-              <AppText variant="caption" color="secondary">
-                Day 12
-              </AppText>
-              <AppText variant="label" color="primary">
-                0.12 SOL
-              </AppText>
-            </View>
-          </View>
-          <AppText variant="caption" color="tertiary" style={styles.infoSubtext}>
-            Increasing commitment helps you stay accountable
+          <AppText variant="bodySm" color="secondary" style={styles.infoSubtext}>
+            Daily Check-in helps you build consistency. Your habits are stored on-chain, creating permanent proof of your dedication.
           </AppText>
         </View>
 
@@ -255,19 +234,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  feeScale: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.lg,
-  },
-  feeItem: {
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  feeArrow: {
-    paddingTop: Spacing.md,
-  },
+
   infoSubtext: {
     textAlign: 'center',
   },
