@@ -101,17 +101,6 @@ export function CheckInHabitSetup({ onCreateHabit, isLoading }: HabitSetupProps)
           </View>
         ) : null}
 
-        {/* App Info Box */}
-        <View style={styles.infoBox}>
-          <View style={styles.infoHeader}>
-            <UiIconSymbol name="info.circle.fill" size={18} color={Colors.primary.default} />
-            <AppText variant="label">How it works</AppText>
-          </View>
-          <AppText variant="bodySm" color="secondary" style={styles.infoSubtext}>
-            Daily Check-in helps you build consistency. Your habits are stored on-chain, creating permanent proof of your dedication.
-          </AppText>
-        </View>
-
         {/* Submit Button */}
         <TouchableOpacity onPress={handleSubmit} disabled={isLoading} activeOpacity={0.85} style={styles.submitWrapper}>
           <LinearGradient
@@ -134,6 +123,17 @@ export function CheckInHabitSetup({ onCreateHabit, isLoading }: HabitSetupProps)
             )}
           </LinearGradient>
         </TouchableOpacity>
+
+        {/* App Info Box */}
+        <View style={styles.infoBox}>
+          <View style={styles.infoHeader}>
+            <UiIconSymbol name="info.circle.fill" size={18} color={Colors.primary.default} />
+            <AppText variant="label">How it works</AppText>
+          </View>
+          <AppText variant="bodySm" color="secondary" style={styles.infoSubtext}>
+            Daily Check-in helps you build consistency. Your habits are stored on-chain, creating permanent proof of your dedication.
+          </AppText>
+        </View>
       </View>
     </ScrollView>
   )

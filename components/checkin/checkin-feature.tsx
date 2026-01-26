@@ -27,6 +27,7 @@ export function CheckInFeature() {
     loading,
     createHabit,
     recordCheckIn,
+    advanceToNextDay,
     getTodayCheckIn,
     getCurrentDayNumber,
     getProgress,
@@ -127,9 +128,11 @@ export function CheckInFeature() {
     }
   }
 
-  const handleSuccessModalClose = () => {
+  const handleSuccessModalClose = async () => {
     setShowSuccessModal(false)
     setMintResult(null)
+    // Automatically advance to the next day so user can check in immediately
+    await advanceToNextDay()
   }
 
   const currentDay = getCurrentDayNumber()

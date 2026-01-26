@@ -69,6 +69,11 @@ export function CheckInButton({ dayNumber, onCheckIn, isLoading, isCompleted, is
                 <AppText variant="h2" style={styles.buttonText}>
                   Check In
                 </AppText>
+                <View style={styles.mintBadge}>
+                  <AppText variant="labelSm" style={styles.mintBadgeText}>
+                    MINT YOUR EARLY NFT
+                  </AppText>
+                </View>
                 <View style={styles.dayBadge}>
                   <AppText variant="labelSm" style={styles.dayBadgeText}>
                     Day {dayNumber}
@@ -124,6 +129,20 @@ const styles = StyleSheet.create({
   buttonText: {
     color: Colors.text.inverse,
     letterSpacing: -0.5,
+  },
+  mintBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  mintBadgeText: {
+    color: Colors.text.inverse,
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   dayBadge: {
     backgroundColor: 'rgba(255, 255, 255, 0.2)',

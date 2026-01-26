@@ -43,11 +43,11 @@ export class AppConfig {
 
   /**
    * Calculate mint fee for a given day (linear progression)
-   * Day 1 = 0.02 SOL, Day 12 = 0.07 SOL
+   * Day 1 = 0.01 SOL, Day 12 = 0.08 SOL
    */
   static getCheckInFee = (dayNumber: number): number => {
-    const minFee = 0.02
-    const maxFee = 0.07
+    const minFee = 0.01
+    const maxFee = 0.08
     const increment = (maxFee - minFee) / (AppConfig.totalDays - 1)
     return Number((minFee + (dayNumber - 1) * increment).toFixed(4))
   }

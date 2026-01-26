@@ -94,6 +94,36 @@ export function useHabitStorage() {
     [habit, saveHabit],
   )
 
+  const advanceToNextDay = useCallback(async () => {
+    if (!habit) return
+
+    // Find the last completed day
+    const lastCompletedIdx = habit.checkIns.reduce((maxIdx, checkIn, idx) => {
+      return checkIn.completed ? idx : maxIdx
+    }, -1)
+
+    // If no days completed or all days completed, nothing to advance
+    if (lastCompletedIdx === -1 || lastCompletedIdx >= TOTAL_DAYS - 1) return
+
+    // Shift all remaining day dates so the next day becomes "today"
+    const today = getDateString()
+    const updatedCheckIns = habit.checkIns.map((checkIn, idx) => {
+      if (idx <= lastCompletedIdx) {
+        // Keep completed days as-is
+        return checkIn
+      }
+      // Shift future days: next uncompleted day becomes today, rest follow
+      const daysFromNextDay = idx - (lastCompletedIdx + 1)
+      const newDate = new Date()
+      newDate.setDate(newDate.getDate() + daysFromNextDay)
+      return { ...checkIn, date: getDateString(newDate) }
+    })
+
+    const updatedHabit = { ...habit, checkIns: updatedCheckIns }
+    await saveHabit(updatedHabit)
+    return updatedHabit
+  }, [habit, saveHabit])
+
   const deleteHabit = useCallback(async () => {
     try {
       await AsyncStorage.removeItem(HABIT_STORAGE_KEY)
@@ -139,6 +169,7 @@ export function useHabitStorage() {
     loading,
     createHabit,
     recordCheckIn,
+    advanceToNextDay,
     deleteHabit,
     getTodayCheckIn,
     getCurrentDayNumber,

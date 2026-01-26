@@ -72,6 +72,7 @@ export default function TabLayout() {
               } : undefined}
             />
           ),
+          tabBarItemStyle: { display: 'none' },
         }}
       />
       <Tabs.Screen

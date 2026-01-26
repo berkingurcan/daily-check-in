@@ -42,6 +42,12 @@ const MAPPING = {
   'star.fill': 'star',
   'clock.fill': 'schedule',
   'moon.fill': 'dark-mode',
+  'chart.line.uptrend.xyaxis': 'trending-up',
+  'target': 'adjust',
+  'play.fill': 'play-arrow',
+  'exclamationmark.circle.fill': 'error',
+  'photo': 'photo',
+  'arrow.up.right.square': 'open-in-new',
 } as UiIconMapping
 
 /**
