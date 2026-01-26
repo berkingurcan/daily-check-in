@@ -1,0 +1,40 @@
+{
+    "name": "Day 12: Habit Master",
+    "symbol": "DCIN",
+    "description": "Challenge complete! A new habit has been forged through dedication and consistency",
+    "image": "https://dailycheckin.app/badges/day12.png",
+    "external_url": "https://dailycheckin.app",
+    "attributes": [
+        {
+            "trait_type": "Day",
+            "value": "12"
+        },
+        {
+            "trait_type": "Milestone",
+            "value": "Challenge Complete"
+        },
+        {
+            "trait_type": "Difficulty",
+            "value": "Master"
+        },
+        {
+            "trait_type": "Mint Fee",
+            "value": "0.07 SOL"
+        }
+    ],
+    "properties": {
+        "files": [
+            {
+                "uri": "https://dailycheckin.app/badges/day12.png",
+                "type": "image/png"
+            }
+        ],
+        "category": "image",
+        "creators": [
+            {
+                "address": "9ny4NhFAkJWEwU1VSggsz1fbiwEn3o7GEXZ8NvdcDQhh",
+                "share": 100
+            }
+        ]
+    }
+}

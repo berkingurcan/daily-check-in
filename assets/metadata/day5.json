@@ -1,0 +1,40 @@
+{
+    "name": "Day 5: Habit Check-In",
+    "symbol": "DCIN",
+    "description": "Almost halfway through the challenge",
+    "image": "https://dailycheckin.app/badges/day5.png",
+    "external_url": "https://dailycheckin.app",
+    "attributes": [
+        {
+            "trait_type": "Day",
+            "value": "5"
+        },
+        {
+            "trait_type": "Milestone",
+            "value": "Midway Progress"
+        },
+        {
+            "trait_type": "Difficulty",
+            "value": "Intermediate"
+        },
+        {
+            "trait_type": "Mint Fee",
+            "value": "0.0382 SOL"
+        }
+    ],
+    "properties": {
+        "files": [
+            {
+                "uri": "https://dailycheckin.app/badges/day5.png",
+                "type": "image/png"
+            }
+        ],
+        "category": "image",
+        "creators": [
+            {
+                "address": "9ny4NhFAkJWEwU1VSggsz1fbiwEn3o7GEXZ8NvdcDQhh",
+                "share": 100
+            }
+        ]
+    }
+}

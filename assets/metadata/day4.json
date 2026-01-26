@@ -1,0 +1,40 @@
+{
+    "name": "Day 4: Habit Check-In",
+    "symbol": "DCIN",
+    "description": "Approaching the first week milestone",
+    "image": "https://dailycheckin.app/badges/day4.png",
+    "external_url": "https://dailycheckin.app",
+    "attributes": [
+        {
+            "trait_type": "Day",
+            "value": "4"
+        },
+        {
+            "trait_type": "Milestone",
+            "value": "Gaining Traction"
+        },
+        {
+            "trait_type": "Difficulty",
+            "value": "Beginner"
+        },
+        {
+            "trait_type": "Mint Fee",
+            "value": "0.0336 SOL"
+        }
+    ],
+    "properties": {
+        "files": [
+            {
+                "uri": "https://dailycheckin.app/badges/day4.png",
+                "type": "image/png"
+            }
+        ],
+        "category": "image",
+        "creators": [
+            {
+                "address": "9ny4NhFAkJWEwU1VSggsz1fbiwEn3o7GEXZ8NvdcDQhh",
+                "share": 100
+            }
+        ]
+    }
+}

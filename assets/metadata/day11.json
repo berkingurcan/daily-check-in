@@ -1,0 +1,40 @@
+{
+    "name": "Day 11: Habit Check-In",
+    "symbol": "DCIN",
+    "description": "One day away from completing the challenge",
+    "image": "https://dailycheckin.app/badges/day11.png",
+    "external_url": "https://dailycheckin.app",
+    "attributes": [
+        {
+            "trait_type": "Day",
+            "value": "11"
+        },
+        {
+            "trait_type": "Milestone",
+            "value": "Almost There"
+        },
+        {
+            "trait_type": "Difficulty",
+            "value": "Advanced"
+        },
+        {
+            "trait_type": "Mint Fee",
+            "value": "0.0655 SOL"
+        }
+    ],
+    "properties": {
+        "files": [
+            {
+                "uri": "https://dailycheckin.app/badges/day11.png",
+                "type": "image/png"
+            }
+        ],
+        "category": "image",
+        "creators": [
+            {
+                "address": "9ny4NhFAkJWEwU1VSggsz1fbiwEn3o7GEXZ8NvdcDQhh",
+                "share": 100
+            }
+        ]
+    }
+}

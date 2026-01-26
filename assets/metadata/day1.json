@@ -1,0 +1,40 @@
+{
+    "name": "Day 1: Habit Check-In",
+    "symbol": "DCIN",
+    "description": "Started the 12-day habit journey with the first successful check-in",
+    "image": "https://dailycheckin.app/badges/day1.png",
+    "external_url": "https://dailycheckin.app",
+    "attributes": [
+        {
+            "trait_type": "Day",
+            "value": "1"
+        },
+        {
+            "trait_type": "Milestone",
+            "value": "First Step"
+        },
+        {
+            "trait_type": "Difficulty",
+            "value": "Beginner"
+        },
+        {
+            "trait_type": "Mint Fee",
+            "value": "0.02 SOL"
+        }
+    ],
+    "properties": {
+        "files": [
+            {
+                "uri": "https://dailycheckin.app/badges/day1.png",
+                "type": "image/png"
+            }
+        ],
+        "category": "image",
+        "creators": [
+            {
+                "address": "9ny4NhFAkJWEwU1VSggsz1fbiwEn3o7GEXZ8NvdcDQhh",
+                "share": 100
+            }
+        ]
+    }
+}

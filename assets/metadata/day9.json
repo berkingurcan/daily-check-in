@@ -1,0 +1,40 @@
+{
+    "name": "Day 9: Habit Check-In",
+    "symbol": "DCIN",
+    "description": "Three days to go - the finish line is near",
+    "image": "https://dailycheckin.app/badges/day9.png",
+    "external_url": "https://dailycheckin.app",
+    "attributes": [
+        {
+            "trait_type": "Day",
+            "value": "9"
+        },
+        {
+            "trait_type": "Milestone",
+            "value": "Final Push"
+        },
+        {
+            "trait_type": "Difficulty",
+            "value": "Advanced"
+        },
+        {
+            "trait_type": "Mint Fee",
+            "value": "0.0564 SOL"
+        }
+    ],
+    "properties": {
+        "files": [
+            {
+                "uri": "https://dailycheckin.app/badges/day9.png",
+                "type": "image/png"
+            }
+        ],
+        "category": "image",
+        "creators": [
+            {
+                "address": "9ny4NhFAkJWEwU1VSggsz1fbiwEn3o7GEXZ8NvdcDQhh",
+                "share": 100
+            }
+        ]
+    }
+}
