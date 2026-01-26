@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, ScrollView, RefreshControl, Alert } from 'react-native'
+import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native'
 import { useMobileWallet } from '@wallet-ui/react-native-web3js'
 import Snackbar from 'react-native-snackbar'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -12,8 +12,10 @@ import { useCheckInTransaction } from './use-checkin-transaction'
 import { CheckInHabitSetup } from './checkin-ui-habit-setup'
 import { CheckInButton } from './checkin-ui-button'
 import { CheckInProgressGrid } from './checkin-ui-progress-grid'
+import { CheckInConfirmModal } from './checkin-confirm-modal'
 import { HabitCategory, HABIT_CATEGORIES } from './types'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
+import { AppConfig } from '@/constants/app-config'
 
 export function CheckInFeature() {
   const { account } = useMobileWallet()
@@ -31,6 +33,8 @@ export function CheckInFeature() {
 
   const [refreshing, setRefreshing] = useState(false)
   const [isCreating, setIsCreating] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [isConfirming, setIsConfirming] = useState(false)
 
   const checkInMutation = useCheckInTransaction({
     address: account?.address!,
@@ -60,36 +64,35 @@ export function CheckInFeature() {
     }
   }
 
-  const handleCheckIn = async () => {
+  const handleCheckInPress = () => {
+    setShowConfirmModal(true)
+  }
+
+  const handleConfirmCheckIn = async () => {
     const dayNumber = getCurrentDayNumber()
     if (!dayNumber) return
 
-    Alert.alert(
-      'Confirm Check-In',
-      `You are about to check in for Day ${dayNumber}.\n\nThis will send ${(dayNumber * 0.01).toFixed(2)} SOL as a commitment fee.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Confirm',
-          onPress: async () => {
-            try {
-              const result = await checkInMutation.mutateAsync({ dayNumber })
-              await recordCheckIn(dayNumber, result.signature, result.feePaid)
-              Snackbar.show({
-                text: `Day ${dayNumber} check-in complete!`,
-                duration: Snackbar.LENGTH_LONG,
-              })
-            } catch (error: any) {
-              Snackbar.show({
-                text: error?.message || 'Check-in failed. Please try again.',
-                duration: Snackbar.LENGTH_LONG,
-              })
-            }
-          },
-        },
-      ],
-    )
+    setIsConfirming(true)
+    try {
+      const result = await checkInMutation.mutateAsync({ dayNumber })
+      await recordCheckIn(dayNumber, result.signature, result.feePaid)
+      setShowConfirmModal(false)
+      Snackbar.show({
+        text: `Day ${dayNumber} check-in complete!`,
+        duration: Snackbar.LENGTH_LONG,
+      })
+    } catch (error: any) {
+      Snackbar.show({
+        text: error?.message || 'Check-in failed. Please try again.',
+        duration: Snackbar.LENGTH_LONG,
+      })
+    } finally {
+      setIsConfirming(false)
+    }
   }
+
+  const currentDay = getCurrentDayNumber()
+  const fee = currentDay ? AppConfig.getCheckInFee(currentDay) : 0
 
   // Not connected state
   if (!account) {
@@ -141,7 +144,6 @@ export function CheckInFeature() {
   }
 
   const todayCheckIn = getTodayCheckIn()
-  const currentDay = getCurrentDayNumber()
   const progress = getProgress()
   const journeyComplete = isJourneyComplete()
   const categoryInfo = HABIT_CATEGORIES.find((c) => c.value === habit.category)
@@ -197,7 +199,7 @@ export function CheckInFeature() {
           <View style={styles.checkInSection}>
             <CheckInButton
               dayNumber={currentDay}
-              onCheckIn={handleCheckIn}
+              onCheckIn={handleCheckInPress}
               isLoading={checkInMutation.isPending}
               isCompleted={todayCheckIn?.completed || false}
               isDisabled={!todayCheckIn}
@@ -208,6 +210,16 @@ export function CheckInFeature() {
         {/* Progress Grid */}
         <CheckInProgressGrid checkIns={habit.checkIns} currentDayNumber={currentDay} />
       </ScrollView>
+
+      {/* Confirmation Modal */}
+      <CheckInConfirmModal
+        visible={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirmCheckIn}
+        dayNumber={currentDay}
+        fee={fee}
+        loading={isConfirming}
+      />
     </AppPage>
   )
 }
