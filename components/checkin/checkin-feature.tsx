@@ -9,8 +9,8 @@ import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import { useMobileWallet } from '@wallet-ui/react-native-web3js'
 import { LinearGradient } from 'expo-linear-gradient'
-import React, { useState } from 'react'
-import { Alert, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { Alert, InteractionManager, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import Snackbar from 'react-native-snackbar'
 import { CheckInConfirmModal } from './checkin-confirm-modal'
 import { CheckInButton } from './checkin-ui-button'
@@ -65,6 +65,16 @@ export function CheckInFeature() {
 
   // Insufficient balance modal state
   const [showInsufficientBalanceModal, setShowInsufficientBalanceModal] = useState(false)
+
+  // Ref to track pending InteractionManager handles for cleanup
+  const interactionHandleRef = useRef<ReturnType<typeof InteractionManager.runAfterInteractions> | null>(null)
+
+  // Cleanup pending interactions on unmount
+  useEffect(() => {
+    return () => {
+      interactionHandleRef.current?.cancel()
+    }
+  }, [])
 
   const handleRefresh = async () => {
     setRefreshing(true)
@@ -155,10 +165,16 @@ export function CheckInFeature() {
     }
   }
 
-  const handleSuccessModalClose = async () => {
+  const handleSuccessModalClose = useCallback(() => {
     setShowSuccessModal(false)
-    setMintResult(null)
-  }
+    // Cancel any pending interaction before scheduling a new one
+    interactionHandleRef.current?.cancel()
+    // Delay clearing state until after modal animation completes
+    // This prevents Fabric race conditions during unmount
+    interactionHandleRef.current = InteractionManager.runAfterInteractions(() => {
+      setMintResult(null)
+    })
+  }, [])
 
   const handleNextDay = async () => {
     setIsAdvancing(true)
@@ -315,18 +331,16 @@ export function CheckInFeature() {
         loading={isConfirming}
       />
 
-      {/* Mint Success Modal */}
-      {mintResult && (
-        <MintSuccessModal
-          visible={showSuccessModal}
-          onClose={handleSuccessModalClose}
-          dayNumber={mintResult.dayNumber}
-          badge={mintResult.badge}
-          mintAddress={mintResult.mintAddress}
-          signature={mintResult.signature}
-          network={getNetwork()}
-        />
-      )}
+      {/* Mint Success Modal - Always rendered, visibility controlled via prop */}
+      <MintSuccessModal
+        visible={showSuccessModal}
+        onClose={handleSuccessModalClose}
+        dayNumber={mintResult?.dayNumber ?? null}
+        badge={mintResult?.badge ?? null}
+        mintAddress={mintResult?.mintAddress ?? null}
+        signature={mintResult?.signature ?? null}
+        network={getNetwork()}
+      />
 
       {/* Insufficient Balance Modal */}
       <InsufficientBalanceModal

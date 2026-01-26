@@ -21,10 +21,10 @@ import { DailyBadge } from './types'
 interface MintSuccessModalProps {
     visible: boolean
     onClose: () => void
-    dayNumber: number
-    badge: DailyBadge
-    mintAddress: string
-    signature: string
+    dayNumber: number | null
+    badge: DailyBadge | null
+    mintAddress: string | null
+    signature: string | null
     network?: 'devnet' | 'mainnet-beta' | 'testnet'
 }
 
@@ -39,6 +39,12 @@ export function MintSuccessModal({
 }: MintSuccessModalProps) {
     const scaleAnim = useRef(new Animated.Value(0.95)).current
     const fadeAnim = useRef(new Animated.Value(0)).current
+
+    // Safe defaults for rendering when props are null (modal hidden)
+    const safeDayNumber = dayNumber ?? 1
+    const safeBadge = badge ?? { name: '', description: '', image: '' }
+    const safeMintAddress = mintAddress ?? ''
+    const safeSignature = signature ?? ''
 
     useEffect(() => {
         if (visible) {
@@ -62,14 +68,16 @@ export function MintSuccessModal({
     }, [visible])
 
     const handleViewOnExplorer = () => {
+        if (!safeSignature) return
         const cluster = network === 'mainnet-beta' ? '' : `?cluster=${network}`
-        const url = `https://explorer.solana.com/tx/${signature}${cluster}`
+        const url = `https://explorer.solana.com/tx/${safeSignature}${cluster}`
         Linking.openURL(url)
     }
 
     const handleViewNFT = () => {
+        if (!safeMintAddress) return
         const cluster = network === 'mainnet-beta' ? '' : `?cluster=${network}`
-        const url = `https://explorer.solana.com/address/${mintAddress}${cluster}`
+        const url = `https://explorer.solana.com/address/${safeMintAddress}${cluster}`
         Linking.openURL(url)
     }
 
@@ -103,20 +111,20 @@ export function MintSuccessModal({
 
                             {/* Day indicator */}
                             <AppText style={styles.dayIndicator}>
-                                DAY {String(dayNumber).padStart(2, '0')}
+                                DAY {String(safeDayNumber).padStart(2, '0')}
                             </AppText>
 
                             {/* Badge name */}
-                            <AppText style={styles.badgeName}>{badge.name}</AppText>
+                            <AppText style={styles.badgeName}>{safeBadge.name}</AppText>
 
                             {/* Description */}
-                            <AppText style={styles.description}>{badge.description}</AppText>
+                            <AppText style={styles.description}>{safeBadge.description}</AppText>
 
                             {/* Mint address */}
                             <View style={styles.addressContainer}>
                                 <AppText style={styles.addressLabel}>MINT ADDRESS</AppText>
                                 <AppText style={styles.address}>
-                                    {mintAddress.slice(0, 8)}...{mintAddress.slice(-8)}
+                                    {safeMintAddress ? `${safeMintAddress.slice(0, 8)}...${safeMintAddress.slice(-8)}` : ''}
                                 </AppText>
                             </View>
 
