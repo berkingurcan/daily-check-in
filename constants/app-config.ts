@@ -35,7 +35,7 @@ export class AppConfig {
   static defaultNetwork = getNetworkFromEnv()
 
   static commissionWallet = new PublicKey(
-    process.env.EXPO_PUBLIC_COMMISSION_WALLET || '11111111111111111111111111111111'
+    process.env.EXPO_PUBLIC_COMMISSION_WALLET || '11111111111111111111111111111111',
   )
 
   static totalDays = 12

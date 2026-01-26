@@ -1,15 +1,43 @@
 import { PropsWithChildren } from 'react'
-import { DarkTheme as AppThemeDark, DefaultTheme as AppThemeLight, ThemeProvider } from '@react-navigation/native'
-import { useColorScheme } from 'react-native'
+import { Theme, ThemeProvider } from '@react-navigation/native'
+import { Colors } from '@/constants/colors'
+
+// Aurora Flow custom theme for React Navigation
+const AuroraFlowTheme: Theme = {
+  dark: true,
+  colors: {
+    primary: Colors.aurora.primary.default,
+    background: Colors.aurora.background.primary,
+    card: Colors.aurora.background.secondary,
+    text: Colors.aurora.text.primary,
+    border: Colors.aurora.border.default,
+    notification: Colors.aurora.accent.default,
+  },
+  fonts: {
+    regular: {
+      fontFamily: 'Inter_400Regular',
+      fontWeight: '400',
+    },
+    medium: {
+      fontFamily: 'Inter_500Medium',
+      fontWeight: '500',
+    },
+    bold: {
+      fontFamily: 'SpaceGrotesk_700Bold',
+      fontWeight: '700',
+    },
+    heavy: {
+      fontFamily: 'SpaceGrotesk_700Bold',
+      fontWeight: '700',
+    },
+  },
+}
 
 export function useAppTheme() {
-  const colorScheme = useColorScheme()
-  const isDark = colorScheme === 'dark'
-  const theme = isDark ? AppThemeDark : AppThemeLight
   return {
-    colorScheme,
-    isDark,
-    theme,
+    colorScheme: 'dark' as const,
+    isDark: true,
+    theme: AuroraFlowTheme,
   }
 }
 

@@ -1,9 +1,7 @@
-import { useThemeColor } from '@/hooks/use-theme-color'
 import { View, type ViewProps } from 'react-native'
 import React from 'react'
+import { Colors, Spacing } from '@/constants/theme'
 
 export function AppView({ style, ...otherProps }: ViewProps) {
-  const backgroundColor = useThemeColor({}, 'background')
-
-  return <View style={[{ backgroundColor, gap: 8 }, style]} {...otherProps} />
+  return <View style={[{ backgroundColor: Colors.background.primary, gap: Spacing.sm }, style]} {...otherProps} />
 }

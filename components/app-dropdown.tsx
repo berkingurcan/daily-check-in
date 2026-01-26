@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { useThemeColor } from '@/hooks/use-theme-color'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { AppText } from '@/components/app-text'
+import { Colors, Spacing, BorderRadius, Shadows } from '@/constants/theme'
+import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 
-// TODO: Implement using @rn-primitives/dropdown-menu like in WalletUiDropdown
 export function AppDropdown({
   items,
   selectedItem,
@@ -14,30 +15,36 @@ export function AppDropdown({
 }) {
   const [isOpen, setIsOpen] = useState(false)
 
-  const backgroundColor = useThemeColor({ light: '#f0f0f0', dark: '#333333' }, 'background')
-  const listBackgroundColor = useThemeColor({ light: '#ffffff', dark: '#1c1c1e' }, 'background')
-  const borderColor = useThemeColor({ light: '#cccccc', dark: '#555555' }, 'border')
-  const textColor = useThemeColor({ light: '#000000', dark: '#ffffff' }, 'text')
-
   return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <TouchableOpacity style={[styles.header, { backgroundColor, borderColor }]} onPress={() => setIsOpen(!isOpen)}>
-        <Text style={{ color: textColor }}>{selectedItem}</Text>
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.trigger} onPress={() => setIsOpen(!isOpen)} activeOpacity={0.7}>
+        <AppText variant="label">{selectedItem}</AppText>
+        <UiIconSymbol name={isOpen ? 'chevron.up' : 'chevron.down'} size={14} color={Colors.text.secondary} />
       </TouchableOpacity>
+
       {isOpen && (
-        <View style={[styles.list, { backgroundColor: listBackgroundColor, borderColor }]}>
-          {items.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.item, { borderBottomColor: borderColor }]}
-              onPress={() => {
-                selectItem(option)
-                setIsOpen(false)
-              }}
-            >
-              <Text style={{ color: textColor }}>{option}</Text>
-            </TouchableOpacity>
-          ))}
+        <View style={styles.dropdown}>
+          {items.map((option, index) => {
+            const isSelected = option === selectedItem
+            const isLast = index === items.length - 1
+
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[styles.option, isSelected && styles.optionSelected, !isLast && styles.optionBorder]}
+                onPress={() => {
+                  selectItem(option)
+                  setIsOpen(false)
+                }}
+                activeOpacity={0.7}
+              >
+                <AppText variant="body" style={isSelected ? styles.optionTextSelected : undefined}>
+                  {option}
+                </AppText>
+                {isSelected && <UiIconSymbol name="checkmark" size={16} color={Colors.primary.default} />}
+              </TouchableOpacity>
+            )
+          })}
         </View>
       )}
     </View>
@@ -46,24 +53,47 @@ export function AppDropdown({
 
 const styles = StyleSheet.create({
   container: {
-    width: 'auto',
-    borderRadius: 5,
     position: 'relative',
+    zIndex: 100,
   },
-  header: {
-    padding: 10,
-    borderRadius: 5,
-  },
-  list: {
+  trigger: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    backgroundColor: Colors.background.secondary,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderRadius: 5,
-    marginTop: 38,
-    width: 'auto',
-    position: 'absolute',
-    zIndex: 10,
+    borderColor: Colors.border.subtle,
   },
-  item: {
-    padding: 10,
+  dropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: Spacing.xs,
+    backgroundColor: Colors.surface.elevated,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: Colors.border.default,
+    minWidth: 150,
+    ...Shadows.lg,
+  },
+  option: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+  },
+  optionBorder: {
     borderBottomWidth: 1,
+    borderBottomColor: Colors.border.subtle,
+  },
+  optionSelected: {
+    backgroundColor: Colors.primary.muted,
+  },
+  optionTextSelected: {
+    color: Colors.primary.default,
   },
 })

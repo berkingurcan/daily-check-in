@@ -2,8 +2,9 @@ import React from 'react'
 import { TouchableOpacity, View, StyleSheet, ActivityIndicator } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { AppText } from '@/components/app-text'
-import { Colors } from '@/constants/colors'
+import { Colors, Spacing, BorderRadius, Shadows, Components } from '@/constants/theme'
 import { AppConfig } from '@/constants/app-config'
+import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 
 interface CheckInButtonProps {
   dayNumber: number
@@ -13,23 +14,29 @@ interface CheckInButtonProps {
   isDisabled: boolean
 }
 
-export function CheckInButton({
-  dayNumber,
-  onCheckIn,
-  isLoading,
-  isCompleted,
-  isDisabled,
-}: CheckInButtonProps) {
+export function CheckInButton({ dayNumber, onCheckIn, isLoading, isCompleted, isDisabled }: CheckInButtonProps) {
   const fee = AppConfig.getCheckInFee(dayNumber)
 
   if (isCompleted) {
     return (
       <View style={styles.completedContainer}>
         <View style={[styles.button, styles.completedButton]}>
-          <AppText style={styles.completedText}>Day {dayNumber} Complete!</AppText>
-          <AppText style={styles.checkIcon}>✓</AppText>
+          <View style={styles.completedIconContainer}>
+            <UiIconSymbol name="checkmark" size={40} color={Colors.text.inverse} />
+          </View>
+          <AppText variant="h4" style={styles.completedText}>
+            Day {dayNumber}
+          </AppText>
+          <AppText variant="bodySm" style={styles.completedSubtext}>
+            Complete
+          </AppText>
         </View>
-        <AppText style={styles.helperText}>Come back tomorrow for Day {dayNumber + 1}</AppText>
+        <View style={styles.helperContainer}>
+          <UiIconSymbol name="clock.fill" size={14} color={Colors.text.tertiary} />
+          <AppText variant="caption" color="tertiary">
+            Come back tomorrow for Day {dayNumber + 1}
+          </AppText>
+        </View>
       </View>
     )
   }
@@ -38,7 +45,10 @@ export function CheckInButton({
     return (
       <View style={styles.disabledContainer}>
         <View style={[styles.button, styles.disabledButton]}>
-          <AppText style={styles.disabledText}>Not Available Today</AppText>
+          <UiIconSymbol name="moon.fill" size={32} color={Colors.text.tertiary} />
+          <AppText variant="label" color="tertiary" style={styles.disabledText}>
+            Not Available
+          </AppText>
         </View>
       </View>
     )
@@ -46,111 +56,147 @@ export function CheckInButton({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={onCheckIn} disabled={isLoading} activeOpacity={0.8}>
+      <TouchableOpacity onPress={onCheckIn} disabled={isLoading} activeOpacity={0.85}>
         <LinearGradient
-          colors={[Colors.brand.gradientStart, Colors.brand.gradientEnd]}
+          colors={Colors.gradient.primary}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.button}
+          style={[styles.button, styles.activeButton]}
         >
           {isLoading ? (
-            <ActivityIndicator size="large" color={Colors.dark.text} />
+            <ActivityIndicator size="large" color={Colors.text.inverse} />
           ) : (
             <>
-              <AppText style={styles.buttonText}>Check In</AppText>
-              <AppText style={styles.dayText}>Day {dayNumber}</AppText>
+              <View style={styles.buttonContent}>
+                <AppText variant="h2" style={styles.buttonText}>
+                  Check In
+                </AppText>
+                <View style={styles.dayBadge}>
+                  <AppText variant="labelSm" style={styles.dayBadgeText}>
+                    Day {dayNumber}
+                  </AppText>
+                </View>
+              </View>
+              <View style={styles.pulseRing} />
             </>
           )}
         </LinearGradient>
       </TouchableOpacity>
+
       <View style={styles.feeContainer}>
-        <AppText style={styles.feeLabel}>Transaction Fee</AppText>
-        <AppText style={styles.feeAmount}>{fee.toFixed(2)} SOL</AppText>
+        <View style={styles.feeRow}>
+          <UiIconSymbol name="bolt.fill" size={14} color={Colors.primary.default} />
+          <AppText variant="caption" color="secondary">
+            Transaction Fee
+          </AppText>
+        </View>
+        <AppText variant="label" style={styles.feeAmount}>
+          {fee.toFixed(2)} SOL
+        </AppText>
       </View>
     </View>
   )
 }
 
+const BUTTON_SIZE = Components.checkInButton.size
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    gap: 16,
+    gap: Spacing.xl,
   },
   completedContainer: {
     alignItems: 'center',
-    gap: 8,
+    gap: Spacing.md,
   },
   disabledContainer: {
     alignItems: 'center',
   },
   button: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
+    width: BUTTON_SIZE,
+    height: BUTTON_SIZE,
+    borderRadius: BUTTON_SIZE / 2,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: Colors.brand.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
+  },
+  activeButton: {
+    ...Shadows.glowPrimary,
   },
   completedButton: {
     backgroundColor: Colors.checkIn.completed,
-    shadowColor: Colors.checkIn.completed,
+    ...Shadows.glowSuccess,
   },
   disabledButton: {
-    backgroundColor: Colors.checkIn.pending,
-    shadowOpacity: 0,
+    backgroundColor: Colors.surface.default,
+    borderWidth: 2,
+    borderColor: Colors.border.subtle,
+  },
+  buttonContent: {
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
   buttonText: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: Colors.dark.text,
+    color: Colors.text.inverse,
+    letterSpacing: -0.5,
   },
-  dayText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: Colors.dark.text,
-    opacity: 0.9,
-    marginTop: 4,
+  dayBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
+  },
+  dayBadgeText: {
+    color: Colors.text.inverse,
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: BUTTON_SIZE + 20,
+    height: BUTTON_SIZE + 20,
+    borderRadius: (BUTTON_SIZE + 20) / 2,
+    borderWidth: 2,
+    borderColor: Colors.primary.glow,
+    opacity: 0.5,
+  },
+  completedIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.sm,
   },
   completedText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.dark.text,
-    textAlign: 'center',
+    color: Colors.text.inverse,
   },
-  checkIcon: {
-    fontSize: 32,
-    color: Colors.dark.text,
-    marginTop: 8,
+  completedSubtext: {
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   disabledText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: Colors.dark.textSecondary,
+    marginTop: Spacing.sm,
   },
-  helperText: {
-    fontSize: 14,
-    color: Colors.dark.textSecondary,
-    textAlign: 'center',
+  helperContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    marginTop: Spacing.xs,
   },
   feeContainer: {
-    backgroundColor: Colors.dark.backgroundSecondary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
+    backgroundColor: Colors.surface.default,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
+    borderWidth: 1,
+    borderColor: Colors.border.subtle,
   },
-  feeLabel: {
-    fontSize: 12,
-    color: Colors.dark.textSecondary,
+  feeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
   },
   feeAmount: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.brand.primary,
+    color: Colors.primary.default,
   },
 })

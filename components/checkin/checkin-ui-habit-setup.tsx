@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { AppText } from '@/components/app-text'
-import { Colors } from '@/constants/colors'
+import { Colors, Spacing, BorderRadius, Shadows } from '@/constants/theme'
 import { HabitCategory, HABIT_CATEGORIES, TOTAL_DAYS } from './types'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 
@@ -31,94 +31,128 @@ export function CheckInHabitSetup({ onCreateHabit, isLoading }: HabitSetupProps)
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      {/* Header */}
       <View style={styles.header}>
         <LinearGradient
-          colors={[Colors.brand.gradientStart, Colors.brand.gradientEnd]}
+          colors={Colors.gradient.primary}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.iconContainer}
         >
-          <AppText style={styles.icon}>🎯</AppText>
+          <UiIconSymbol name="target" size={36} color={Colors.text.inverse} />
         </LinearGradient>
-        <AppText style={styles.title}>Start Your Journey</AppText>
-        <AppText style={styles.subtitle}>
-          Commit to a habit for {TOTAL_DAYS} days. Each check-in is recorded on-chain as proof of
-          your dedication.
+        <AppText variant="h2" style={styles.title}>
+          Start Your Journey
+        </AppText>
+        <AppText variant="body" color="secondary" style={styles.subtitle}>
+          Commit to a habit for {TOTAL_DAYS} days. Each check-in is recorded on-chain as proof of your dedication.
         </AppText>
       </View>
 
+      {/* Form */}
       <View style={styles.form}>
+        {/* Habit Name Input */}
         <View style={styles.inputGroup}>
-          <AppText style={styles.label}>What habit will you build?</AppText>
+          <AppText variant="label">What habit will you build?</AppText>
           <TextInput
             style={styles.input}
             placeholder="e.g., Morning workout, Read 30 min..."
-            placeholderTextColor={Colors.dark.textSecondary}
+            placeholderTextColor={Colors.text.tertiary}
             value={habitName}
             onChangeText={setHabitName}
             maxLength={50}
           />
         </View>
 
+        {/* Category Selection */}
         <View style={styles.inputGroup}>
-          <AppText style={styles.label}>Category</AppText>
+          <AppText variant="label">Category</AppText>
           <View style={styles.categoryGrid}>
-            {HABIT_CATEGORIES.map((category) => (
-              <TouchableOpacity
-                key={category.value}
-                style={[
-                  styles.categoryButton,
-                  selectedCategory === category.value && styles.categorySelected,
-                ]}
-                onPress={() => setSelectedCategory(category.value)}
-              >
-                <UiIconSymbol
-                  name={category.icon as any}
-                  size={24}
-                  color={
-                    selectedCategory === category.value
-                      ? Colors.dark.text
-                      : Colors.dark.textSecondary
-                  }
-                />
-                <AppText
-                  style={[
-                    styles.categoryLabel,
-                    selectedCategory === category.value && styles.categoryLabelSelected,
-                  ]}
+            {HABIT_CATEGORIES.map((category) => {
+              const isSelected = selectedCategory === category.value
+              return (
+                <TouchableOpacity
+                  key={category.value}
+                  style={[styles.categoryButton, isSelected && styles.categorySelected]}
+                  onPress={() => setSelectedCategory(category.value)}
+                  activeOpacity={0.7}
                 >
-                  {category.label}
-                </AppText>
-              </TouchableOpacity>
-            ))}
+                  <UiIconSymbol
+                    name={category.icon as any}
+                    size={22}
+                    color={isSelected ? Colors.primary.default : Colors.text.tertiary}
+                  />
+                  <AppText variant="caption" style={[styles.categoryLabel, isSelected && styles.categoryLabelSelected]}>
+                    {category.label}
+                  </AppText>
+                </TouchableOpacity>
+              )
+            })}
           </View>
         </View>
 
-        {error ? <AppText style={styles.error}>{error}</AppText> : null}
+        {/* Error message */}
+        {error ? (
+          <View style={styles.errorContainer}>
+            <UiIconSymbol name="exclamationmark.circle.fill" size={16} color={Colors.semantic.error} />
+            <AppText variant="bodySm" style={styles.errorText}>
+              {error}
+            </AppText>
+          </View>
+        ) : null}
 
+        {/* Fee Info Box */}
         <View style={styles.infoBox}>
-          <AppText style={styles.infoTitle}>Fee Structure</AppText>
-          <AppText style={styles.infoText}>Day 1: 0.01 SOL → Day 12: 0.12 SOL</AppText>
-          <AppText style={styles.infoSubtext}>
+          <View style={styles.infoHeader}>
+            <UiIconSymbol name="info.circle.fill" size={18} color={Colors.primary.default} />
+            <AppText variant="label">Fee Structure</AppText>
+          </View>
+          <View style={styles.feeScale}>
+            <View style={styles.feeItem}>
+              <AppText variant="caption" color="secondary">
+                Day 1
+              </AppText>
+              <AppText variant="label" color="primary">
+                0.01 SOL
+              </AppText>
+            </View>
+            <View style={styles.feeArrow}>
+              <UiIconSymbol name="arrow.right" size={14} color={Colors.text.tertiary} />
+            </View>
+            <View style={styles.feeItem}>
+              <AppText variant="caption" color="secondary">
+                Day 12
+              </AppText>
+              <AppText variant="label" color="primary">
+                0.12 SOL
+              </AppText>
+            </View>
+          </View>
+          <AppText variant="caption" color="tertiary" style={styles.infoSubtext}>
             Increasing commitment helps you stay accountable
           </AppText>
         </View>
 
-        <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={isLoading}
-          activeOpacity={0.8}
-          style={styles.submitWrapper}
-        >
+        {/* Submit Button */}
+        <TouchableOpacity onPress={handleSubmit} disabled={isLoading} activeOpacity={0.85} style={styles.submitWrapper}>
           <LinearGradient
-            colors={[Colors.brand.gradientStart, Colors.brand.gradientEnd]}
+            colors={Colors.gradient.primary}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
-            style={styles.submitButton}
+            style={[styles.submitButton, isLoading && styles.submitButtonDisabled]}
           >
-            <AppText style={styles.submitText}>
-              {isLoading ? 'Creating...' : 'Start Today'}
-            </AppText>
+            {isLoading ? (
+              <AppText variant="buttonLg" style={styles.submitText}>
+                Creating...
+              </AppText>
+            ) : (
+              <>
+                <UiIconSymbol name="play.fill" size={18} color={Colors.text.inverse} />
+                <AppText variant="buttonLg" style={styles.submitText}>
+                  Start Today
+                </AppText>
+              </>
+            )}
           </LinearGradient>
         </TouchableOpacity>
       </View>
@@ -131,120 +165,128 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: 16,
-    gap: 24,
+    padding: Spacing.lg,
+    gap: Spacing['2xl'],
   },
   header: {
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  icon: {
-    fontSize: 40,
+    ...Shadows.glowPrimary,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: Colors.dark.text,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
   },
   subtitle: {
-    fontSize: 16,
-    color: Colors.dark.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
+    paddingHorizontal: Spacing.md,
   },
   form: {
-    gap: 20,
+    gap: Spacing.xl,
   },
   inputGroup: {
-    gap: 8,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.dark.text,
+    gap: Spacing.sm,
   },
   input: {
-    backgroundColor: Colors.dark.backgroundSecondary,
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: Colors.surface.default,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
     fontSize: 16,
-    color: Colors.dark.text,
+    fontFamily: 'Inter_400Regular',
+    color: Colors.text.primary,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
+    borderColor: Colors.border.subtle,
   },
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: Spacing.sm,
   },
   categoryButton: {
-    backgroundColor: Colors.dark.backgroundSecondary,
-    borderRadius: 12,
-    padding: 12,
+    backgroundColor: Colors.surface.default,
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
     alignItems: 'center',
-    gap: 6,
-    width: '30%',
+    gap: Spacing.xs,
+    width: '31%',
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: Colors.border.subtle,
   },
   categorySelected: {
-    borderColor: Colors.brand.primary,
-    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    borderColor: Colors.primary.default,
+    backgroundColor: Colors.primary.muted,
   },
   categoryLabel: {
-    fontSize: 12,
-    color: Colors.dark.textSecondary,
+    color: Colors.text.tertiary,
   },
   categoryLabelSelected: {
-    color: Colors.dark.text,
-    fontWeight: '600',
+    color: Colors.primary.default,
   },
-  error: {
-    color: Colors.brand.error,
-    fontSize: 14,
-    textAlign: 'center',
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    backgroundColor: Colors.semantic.errorMuted,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+  },
+  errorText: {
+    color: Colors.semantic.error,
   },
   infoBox: {
-    backgroundColor: Colors.dark.backgroundSecondary,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    gap: 4,
+    backgroundColor: Colors.surface.default,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    gap: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.dark.border,
+    borderColor: Colors.border.subtle,
   },
-  infoTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.dark.text,
+  infoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
-  infoText: {
-    fontSize: 16,
-    color: Colors.brand.primary,
-    fontWeight: '600',
+  feeScale: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+  },
+  feeItem: {
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  feeArrow: {
+    paddingTop: Spacing.md,
   },
   infoSubtext: {
-    fontSize: 12,
-    color: Colors.dark.textSecondary,
+    textAlign: 'center',
   },
   submitWrapper: {
-    marginTop: 8,
+    marginTop: Spacing.sm,
   },
   submitButton: {
-    borderRadius: 16,
-    padding: 18,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    ...Shadows.glowPrimary,
+  },
+  submitButtonDisabled: {
+    opacity: 0.7,
   },
   submitText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.dark.text,
+    color: Colors.text.inverse,
   },
 })

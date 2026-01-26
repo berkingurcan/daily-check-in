@@ -74,7 +74,7 @@ export function useHabitStorage() {
       await saveHabit(newHabit)
       return newHabit
     },
-    [saveHabit]
+    [saveHabit],
   )
 
   const recordCheckIn = useCallback(
@@ -82,16 +82,14 @@ export function useHabitStorage() {
       if (!habit) throw new Error('No active habit')
 
       const updatedCheckIns = habit.checkIns.map((checkIn) =>
-        checkIn.dayNumber === dayNumber
-          ? { ...checkIn, completed: true, transactionSignature, feePaid }
-          : checkIn
+        checkIn.dayNumber === dayNumber ? { ...checkIn, completed: true, transactionSignature, feePaid } : checkIn,
       )
 
       const updatedHabit = { ...habit, checkIns: updatedCheckIns }
       await saveHabit(updatedHabit)
       return updatedHabit
     },
-    [habit, saveHabit]
+    [habit, saveHabit],
   )
 
   const deleteHabit = useCallback(async () => {

@@ -2,17 +2,18 @@ import React, { useState } from 'react'
 import { View, StyleSheet, ScrollView, RefreshControl, Alert } from 'react-native'
 import { useMobileWallet } from '@wallet-ui/react-native-web3js'
 import Snackbar from 'react-native-snackbar'
+import { LinearGradient } from 'expo-linear-gradient'
 import { AppPage } from '@/components/app-page'
-import { AppView } from '@/components/app-view'
 import { AppText } from '@/components/app-text'
 import { WalletUiButtonConnect } from '@/components/solana/wallet-ui-button-connect'
-import { Colors } from '@/constants/colors'
+import { Colors, Spacing, BorderRadius, Shadows } from '@/constants/theme'
 import { useHabitStorage } from './use-habit-storage'
 import { useCheckInTransaction } from './use-checkin-transaction'
 import { CheckInHabitSetup } from './checkin-ui-habit-setup'
 import { CheckInButton } from './checkin-ui-button'
 import { CheckInProgressGrid } from './checkin-ui-progress-grid'
 import { HabitCategory, HABIT_CATEGORIES } from './types'
+import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 
 export function CheckInFeature() {
   const { account } = useMobileWallet()
@@ -49,7 +50,7 @@ export function CheckInFeature() {
         text: 'Habit created! Start your Day 1 check-in.',
         duration: Snackbar.LENGTH_LONG,
       })
-    } catch (error) {
+    } catch {
       Snackbar.show({
         text: 'Failed to create habit',
         duration: Snackbar.LENGTH_SHORT,
@@ -86,34 +87,51 @@ export function CheckInFeature() {
             }
           },
         },
-      ]
+      ],
     )
   }
 
+  // Not connected state
   if (!account) {
     return (
       <AppPage>
-        <AppView style={styles.connectContainer}>
-          <AppText style={styles.connectTitle}>Connect Your Wallet</AppText>
-          <AppText style={styles.connectSubtitle}>
+        <View style={styles.connectContainer}>
+          <LinearGradient
+            colors={['rgba(0, 217, 181, 0.1)', 'transparent']}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+            style={styles.connectGradient}
+          />
+          <View style={styles.connectIconContainer}>
+            <UiIconSymbol name="wallet.pass.fill" size={48} color={Colors.primary.default} />
+          </View>
+          <AppText variant="h3" style={styles.connectTitle}>
+            Connect Your Wallet
+          </AppText>
+          <AppText variant="body" color="secondary" style={styles.connectSubtitle}>
             Connect your Solana wallet to start your 12-day habit journey
           </AppText>
           <WalletUiButtonConnect />
-        </AppView>
+        </View>
       </AppPage>
     )
   }
 
+  // Loading state
   if (loading) {
     return (
       <AppPage>
-        <AppView style={styles.loadingContainer}>
-          <AppText>Loading...</AppText>
-        </AppView>
+        <View style={styles.loadingContainer}>
+          <View style={styles.loadingSpinner} />
+          <AppText variant="body" color="secondary">
+            Loading your journey...
+          </AppText>
+        </View>
       </AppPage>
     )
   }
 
+  // No habit created yet
   if (!habit) {
     return (
       <AppPage>
@@ -132,38 +150,47 @@ export function CheckInFeature() {
     <AppPage>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={Colors.primary.default} />
+        }
+        showsVerticalScrollIndicator={false}
       >
+        {/* Habit Header */}
         <View style={styles.habitHeader}>
-          <AppText style={styles.habitName}>{habit.name}</AppText>
+          <AppText variant="h2">{habit.name}</AppText>
           <View style={styles.categoryBadge}>
-            <AppText style={styles.categoryText}>{categoryInfo?.label || habit.category}</AppText>
+            <UiIconSymbol name={categoryInfo?.icon as any} size={14} color={Colors.primary.default} />
+            <AppText variant="caption" color="primary">
+              {categoryInfo?.label || habit.category}
+            </AppText>
           </View>
         </View>
 
+        {/* Progress Summary */}
         <View style={styles.progressSummary}>
-          <View style={styles.progressItem}>
-            <AppText style={styles.progressNumber}>{progress.completed}</AppText>
-            <AppText style={styles.progressLabel}>Completed</AppText>
-          </View>
+          <ProgressItem value={progress.completed} label="Completed" />
           <View style={styles.progressDivider} />
-          <View style={styles.progressItem}>
-            <AppText style={styles.progressNumber}>{progress.percentage}%</AppText>
-            <AppText style={styles.progressLabel}>Progress</AppText>
-          </View>
+          <ProgressItem value={`${progress.percentage}%`} label="Progress" highlight />
           <View style={styles.progressDivider} />
-          <View style={styles.progressItem}>
-            <AppText style={styles.progressNumber}>{progress.total - progress.completed}</AppText>
-            <AppText style={styles.progressLabel}>Remaining</AppText>
-          </View>
+          <ProgressItem value={progress.total - progress.completed} label="Remaining" />
         </View>
 
+        {/* Main Action Area */}
         {journeyComplete ? (
           <View style={styles.completeContainer}>
-            <AppText style={styles.completeEmoji}>🎉</AppText>
-            <AppText style={styles.completeTitle}>Journey Complete!</AppText>
-            <AppText style={styles.completeText}>
-              You finished your 12-day challenge with {progress.completed} successful check-ins.
+            <LinearGradient
+              colors={Colors.gradient.primary}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.completeIconBg}
+            >
+              <UiIconSymbol name="trophy.fill" size={48} color={Colors.text.inverse} />
+            </LinearGradient>
+            <AppText variant="h2" style={styles.completeTitle}>
+              Journey Complete!
+            </AppText>
+            <AppText variant="body" color="secondary" style={styles.completeText}>
+              You finished your 12-day challenge with {progress.completed} successful check-ins. Amazing dedication!
             </AppText>
           </View>
         ) : (
@@ -178,108 +205,139 @@ export function CheckInFeature() {
           </View>
         )}
 
+        {/* Progress Grid */}
         <CheckInProgressGrid checkIns={habit.checkIns} currentDayNumber={currentDay} />
       </ScrollView>
     </AppPage>
   )
 }
 
+function ProgressItem({ value, label, highlight }: { value: string | number; label: string; highlight?: boolean }) {
+  return (
+    <View style={styles.progressItem}>
+      <AppText variant="h3" style={[styles.progressNumber, highlight && styles.progressNumberHighlight]}>
+        {value}
+      </AppText>
+      <AppText variant="caption" color="secondary">
+        {label}
+      </AppText>
+    </View>
+  )
+}
+
 const styles = StyleSheet.create({
   scrollContent: {
-    gap: 24,
-    paddingBottom: 24,
+    gap: Spacing['2xl'],
+    paddingBottom: Spacing['3xl'],
   },
   connectContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 16,
-    padding: 24,
+    gap: Spacing.lg,
+    padding: Spacing['2xl'],
+  },
+  connectGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 300,
+  },
+  connectIconContainer: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: Colors.primary.muted,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.md,
   },
   connectTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: Colors.dark.text,
     textAlign: 'center',
   },
   connectSubtitle: {
-    fontSize: 16,
-    color: Colors.dark.textSecondary,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: Spacing.md,
+    lineHeight: 24,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: Spacing.lg,
+  },
+  loadingSpinner: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 3,
+    borderColor: Colors.border.subtle,
+    borderTopColor: Colors.primary.default,
   },
   habitHeader: {
     alignItems: 'center',
-    gap: 8,
-  },
-  habitName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: Colors.dark.text,
-    textAlign: 'center',
+    gap: Spacing.sm,
   },
   categoryBadge: {
-    backgroundColor: Colors.brand.primary + '30',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  categoryText: {
-    fontSize: 14,
-    color: Colors.brand.primary,
-    fontWeight: '500',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    backgroundColor: Colors.primary.muted,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
   },
   progressSummary: {
     flexDirection: 'row',
-    backgroundColor: Colors.dark.backgroundSecondary,
-    borderRadius: 16,
-    padding: 20,
+    backgroundColor: Colors.surface.default,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.xl,
     justifyContent: 'space-around',
+    borderWidth: 1,
+    borderColor: Colors.border.subtle,
   },
   progressItem: {
     alignItems: 'center',
-    gap: 4,
+    gap: Spacing.xs,
   },
   progressNumber: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: Colors.dark.text,
+    color: Colors.text.primary,
   },
-  progressLabel: {
-    fontSize: 12,
-    color: Colors.dark.textSecondary,
+  progressNumberHighlight: {
+    color: Colors.primary.default,
   },
   progressDivider: {
     width: 1,
-    backgroundColor: Colors.dark.border,
+    backgroundColor: Colors.border.default,
   },
   checkInSection: {
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: Spacing.lg,
   },
   completeContainer: {
     alignItems: 'center',
-    backgroundColor: Colors.dark.backgroundSecondary,
-    borderRadius: 16,
-    padding: 32,
-    gap: 12,
+    backgroundColor: Colors.surface.default,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing['3xl'],
+    gap: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.border.subtle,
   },
-  completeEmoji: {
-    fontSize: 64,
+  completeIconBg: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...Shadows.glowPrimary,
   },
   completeTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: Colors.checkIn.completed,
+    color: Colors.semantic.success,
+    textAlign: 'center',
   },
   completeText: {
-    fontSize: 16,
-    color: Colors.dark.textSecondary,
     textAlign: 'center',
+    lineHeight: 24,
   },
 })

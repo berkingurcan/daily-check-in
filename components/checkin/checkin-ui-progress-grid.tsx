@@ -1,8 +1,9 @@
 import React from 'react'
 import { View, StyleSheet } from 'react-native'
 import { AppText } from '@/components/app-text'
-import { Colors } from '@/constants/colors'
-import { CheckInDay, TOTAL_DAYS } from './types'
+import { Colors, Spacing, BorderRadius, Shadows, Components } from '@/constants/theme'
+import { CheckInDay } from './types'
+import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 
 interface ProgressGridProps {
   checkIns: CheckInDay[]
@@ -23,128 +24,163 @@ export function CheckInProgressGrid({ checkIns, currentDayNumber }: ProgressGrid
     return 'pending'
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusStyles = (status: string) => {
     switch (status) {
       case 'completed':
-        return Colors.checkIn.completed
+        return {
+          backgroundColor: Colors.checkIn.completed,
+          shadow: Shadows.glowSuccess,
+        }
       case 'missed':
-        return Colors.checkIn.missed
+        return {
+          backgroundColor: Colors.checkIn.missed,
+          shadow: {},
+        }
       case 'today':
-        return Colors.checkIn.today
+        return {
+          backgroundColor: Colors.checkIn.today,
+          shadow: Shadows.glowPrimary,
+        }
       default:
-        return Colors.checkIn.pending
+        return {
+          backgroundColor: Colors.checkIn.pending,
+          shadow: {},
+        }
     }
   }
 
   return (
     <View style={styles.container}>
-      <AppText style={styles.title}>Your 12-Day Journey</AppText>
+      <View style={styles.header}>
+        <AppText variant="h4">Your Journey</AppText>
+        <AppText variant="caption" color="secondary">
+          12 Days
+        </AppText>
+      </View>
+
       <View style={styles.grid}>
         {checkIns.map((checkIn) => {
           const status = getDayStatus(checkIn)
           const isToday = status === 'today'
+          const statusStyles = getStatusStyles(status)
 
           return (
             <View
               key={checkIn.dayNumber}
               style={[
                 styles.dayCircle,
-                { backgroundColor: getStatusColor(status) },
-                isToday && styles.todayGlow,
+                { backgroundColor: statusStyles.backgroundColor },
+                isToday && styles.todayCircle,
+                status === 'completed' && styles.completedCircle,
               ]}
             >
-              <AppText style={styles.dayNumber}>{checkIn.dayNumber}</AppText>
-              {checkIn.completed && <AppText style={styles.checkmark}>✓</AppText>}
+              {checkIn.completed ? (
+                <UiIconSymbol name="checkmark" size={18} color={Colors.text.inverse} />
+              ) : (
+                <AppText variant="labelSm" style={[styles.dayNumber, status === 'pending' && styles.pendingDayNumber]}>
+                  {checkIn.dayNumber}
+                </AppText>
+              )}
+              {isToday && <View style={styles.todayIndicator} />}
             </View>
           )
         })}
       </View>
+
       <View style={styles.legend}>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: Colors.checkIn.completed }]} />
-          <AppText style={styles.legendText}>Completed</AppText>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: Colors.checkIn.today }]} />
-          <AppText style={styles.legendText}>Today</AppText>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: Colors.checkIn.missed }]} />
-          <AppText style={styles.legendText}>Missed</AppText>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: Colors.checkIn.pending }]} />
-          <AppText style={styles.legendText}>Upcoming</AppText>
-        </View>
+        <LegendItem color={Colors.checkIn.completed} label="Completed" />
+        <LegendItem color={Colors.checkIn.today} label="Today" />
+        <LegendItem color={Colors.checkIn.missed} label="Missed" />
+        <LegendItem color={Colors.checkIn.pending} label="Upcoming" />
       </View>
     </View>
   )
 }
 
+function LegendItem({ color, label }: { color: string; label: string }) {
+  return (
+    <View style={styles.legendItem}>
+      <View style={[styles.legendDot, { backgroundColor: color }]} />
+      <AppText variant="caption" color="secondary">
+        {label}
+      </AppText>
+    </View>
+  )
+}
+
+const CIRCLE_SIZE = Components.progressCircle.size
+
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: Colors.dark.backgroundSecondary,
-    borderRadius: 16,
-    gap: 16,
+    backgroundColor: Colors.surface.default,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    gap: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.border.subtle,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.dark.text,
-    textAlign: 'center',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 12,
+    gap: Spacing.md,
   },
   dayCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
+    borderRadius: CIRCLE_SIZE / 2,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
-  todayGlow: {
-    shadowColor: Colors.brand.primary,
+  todayCircle: {
+    shadowColor: Colors.primary.default,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.6,
-    shadowRadius: 10,
-    elevation: 10,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  completedCircle: {
+    shadowColor: Colors.checkIn.completed,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 4,
   },
   dayNumber: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Colors.dark.text,
+    color: Colors.text.primary,
   },
-  checkmark: {
+  pendingDayNumber: {
+    color: Colors.text.tertiary,
+  },
+  todayIndicator: {
     position: 'absolute',
-    bottom: -2,
-    right: -2,
-    fontSize: 12,
-    color: Colors.dark.text,
+    bottom: -4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.text.primary,
   },
   legend: {
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    gap: 16,
-    marginTop: 8,
+    gap: Spacing.lg,
+    paddingTop: Spacing.sm,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: Spacing.xs,
   },
   legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  legendText: {
-    fontSize: 12,
-    color: Colors.dark.textSecondary,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
 })

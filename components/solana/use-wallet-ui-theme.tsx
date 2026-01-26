@@ -1,14 +1,12 @@
-import { useThemeColor } from '@/hooks/use-theme-color'
+import { Colors } from '@/constants/theme'
 
 export function useWalletUiTheme() {
-  const backgroundColor = useThemeColor({}, 'background')
-  const listBackgroundColor = useThemeColor({}, 'background')
-  const borderColor = useThemeColor({}, 'border')
-  const textColor = useThemeColor({}, 'text')
   return {
-    backgroundColor,
-    listBackgroundColor,
-    borderColor,
-    textColor,
+    backgroundColor: Colors.surface.default,
+    listBackgroundColor: Colors.background.secondary,
+    borderColor: Colors.border.default,
+    textColor: Colors.text.primary,
+    primaryColor: Colors.primary.default,
+    secondaryColor: Colors.text.secondary,
   }
 }

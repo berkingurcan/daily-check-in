@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useMobileWallet } from '@wallet-ui/react-native-web3js'
 import { AppText } from '@/components/app-text'
 import { Cluster } from '@/components/cluster/cluster'
+import { ActivityIndicator } from 'react-native'
+import { Colors } from '@/constants/theme'
 
 export function ClusterUiVersion({ selectedCluster }: { selectedCluster: Cluster }) {
   const { connection } = useMobileWallet()
@@ -17,5 +19,13 @@ export function ClusterUiVersion({ selectedCluster }: { selectedCluster: Cluster
       }),
   })
 
-  return <AppText>Version: {query.isLoading ? 'Loading...' : `${query.data?.core} (${query.data?.features})`}</AppText>
+  if (query.isLoading) {
+    return <ActivityIndicator size="small" color={Colors.primary.default} />
+  }
+
+  return (
+    <AppText variant="mono" style={{ fontSize: 12 }}>
+      {query.data?.core}
+    </AppText>
+  )
 }

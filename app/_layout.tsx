@@ -1,5 +1,4 @@
 import { PortalHost } from '@rn-primitives/portal'
-import { useFonts } from 'expo-font'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import 'react-native-reanimated'
@@ -10,34 +9,44 @@ import { View } from 'react-native'
 import { useTrackLocations } from '@/hooks/use-track-locations'
 import { AppSplashController } from '@/components/app-splash-controller'
 import { useAuth } from '@/components/auth/auth-provider'
+import {
+  useFonts,
+  SpaceGrotesk_400Regular,
+  SpaceGrotesk_500Medium,
+  SpaceGrotesk_600SemiBold,
+  SpaceGrotesk_700Bold,
+} from '@expo-google-fonts/space-grotesk'
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter'
 
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
-  // Use this hook to track the locations for analytics or debugging.
-  // Delete if you don't need it.
   useTrackLocations((pathname, params) => {
     console.log(`Track ${pathname}`, { params })
   })
-  const [loaded] = useFonts({
+
+  const [fontsLoaded] = useFonts({
+    // Space Grotesk - Headings
+    SpaceGrotesk_400Regular,
+    SpaceGrotesk_500Medium,
+    SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
+    // Inter - Body text
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    // Keep SpaceMono for monospace/addresses
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   })
 
   const onLayoutRootView = useCallback(async () => {
-    console.log('onLayoutRootView')
-    if (loaded) {
-      console.log('loaded')
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
+    if (fontsLoaded) {
       await SplashScreen.hideAsync()
     }
-  }, [loaded])
+  }, [fontsLoaded])
 
-  if (!loaded) {
-    // Async font loading only occurs in development.
+  if (!fontsLoaded) {
     return null
   }
 
@@ -46,7 +55,7 @@ export default function RootLayout() {
       <AppProviders>
         <AppSplashController />
         <RootNavigator />
-        <StatusBar style="auto" />
+        <StatusBar style="light" />
       </AppProviders>
       <PortalHost />
     </View>

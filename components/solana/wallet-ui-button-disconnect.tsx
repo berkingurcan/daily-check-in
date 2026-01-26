@@ -5,5 +5,5 @@ import React from 'react'
 export function WalletUiButtonDisconnect({ label = 'Disconnect' }: { label?: string }) {
   const { disconnect } = useMobileWallet()
 
-  return <BaseButton label={label} onPress={() => disconnect()} />
+  return <BaseButton label={label} onPress={() => disconnect()} variant="outline" />
 }
