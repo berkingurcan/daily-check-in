@@ -16,12 +16,11 @@ export interface Habit {
   createdAt: string
 }
 
-export type HabitCategory = 'study' | 'workout' | 'running' | 'social' | 'health' | 'creative' | 'other'
+export type HabitCategory = 'study' | 'fitness' | 'social' | 'health' | 'creative' | 'other'
 
 export const HABIT_CATEGORIES: { value: HabitCategory; label: string; icon: string }[] = [
   { value: 'study', label: 'Study', icon: 'book.fill' },
-  { value: 'workout', label: 'Workout', icon: 'dumbbell.fill' },
-  { value: 'running', label: 'Running', icon: 'figure.run' },
+  { value: 'fitness', label: 'Fitness', icon: 'dumbbell.fill' },
   { value: 'social', label: 'Social', icon: 'person.2.fill' },
   { value: 'health', label: 'Health', icon: 'heart.fill' },
   { value: 'creative', label: 'Creative', icon: 'paintbrush.fill' },
@@ -86,4 +85,3 @@ export function getDayBadge(dayNumber: number, habitName: string): DailyBadge {
     image: `badge_day${dayNumber}`,
   }
 }
-
