@@ -23,9 +23,10 @@ interface CheckInTransactionResult {
   badge: MintedBadge
 }
 
-export function useCheckInTransaction({ address }: { address: PublicKey }) {
+export function useCheckInTransaction({ address }: { address: string }) {
   const { connection, signAndSendTransaction } = useMobileWallet()
-  const invalidateBalance = useGetBalanceInvalidate({ address })
+  const addressPubkey = new PublicKey(address)
+  const invalidateBalance = useGetBalanceInvalidate({ address: addressPubkey })
 
   return useMutation({
     mutationKey: ['checkin-transaction', { endpoint: connection.rpcEndpoint, address }],
@@ -38,7 +39,7 @@ export function useCheckInTransaction({ address }: { address: PublicKey }) {
         const { transaction, mintKeypair, latestBlockhash, minContextSlot } =
           await buildNFTMintTransaction({
             connection,
-            payer: address,
+            payer: addressPubkey,
             dayNumber: input.dayNumber,
             badge,
             mintFee: fee,
@@ -58,7 +59,7 @@ export function useCheckInTransaction({ address }: { address: PublicKey }) {
         const metadata = generateBadgeMetadata(
           input.dayNumber,
           badge,
-          address.toBase58(),
+          address,
           mintKeypair.publicKey.toBase58(),
           fee,
           input.habitName

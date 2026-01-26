@@ -91,7 +91,8 @@ export function CheckInFeature() {
   }
 
   const handleCheckInPress = () => {
-    setShowConfirmModal(true)
+    // Directly trigger check-in without confirmation modal
+    handleConfirmCheckIn()
   }
 
   const handleConfirmCheckIn = async () => {
