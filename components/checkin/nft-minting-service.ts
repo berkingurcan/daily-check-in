@@ -265,7 +265,7 @@ export function generateBadgeMetadata(
         name: badge.name,
         symbol: AppConfig.symbol,
         description: badge.description,
-        image: `https://dailycheckin.app/badges/day${dayNumber}.png`,
+        image: 'https://rose-smoggy-sparrow-317.mypinata.cloud/ipfs/bafybeiad5qxyc23qb57xz362sybn5snzla253h355c4rcotjozinsdg5le',
         external_url: AppConfig.uri,
         attributes: [
             { trait_type: 'Day', value: dayNumber.toString() },
@@ -277,7 +277,7 @@ export function generateBadgeMetadata(
         properties: {
             files: [
                 {
-                    uri: `https://dailycheckin.app/badges/day${dayNumber}.png`,
+                    uri: 'https://rose-smoggy-sparrow-317.mypinata.cloud/ipfs/bafybeiad5qxyc23qb57xz362sybn5snzla253h355c4rcotjozinsdg5le',
                     type: 'image/png',
                 },
             ],
