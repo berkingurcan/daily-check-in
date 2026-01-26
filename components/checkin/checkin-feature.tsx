@@ -57,7 +57,7 @@ export function CheckInFeature() {
   } | null>(null)
 
   const checkInMutation = useCheckInTransaction({
-    address: account?.address!,
+    address: account?.address?.toString(),
   })
 
   // Get user balance for insufficient balance check

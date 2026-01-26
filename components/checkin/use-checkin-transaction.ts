@@ -23,14 +23,19 @@ interface CheckInTransactionResult {
   badge: MintedBadge
 }
 
-export function useCheckInTransaction({ address }: { address: string }) {
+export function useCheckInTransaction({ address }: { address: string | undefined }) {
   const { connection, signAndSendTransaction } = useMobileWallet()
-  const addressPubkey = new PublicKey(address)
-  const invalidateBalance = useGetBalanceInvalidate({ address: addressPubkey })
+  // Only create PublicKey when address is available
+  const addressPubkey = address ? new PublicKey(address) : null
+  const invalidateBalance = useGetBalanceInvalidate({ address: addressPubkey! })
 
   return useMutation({
     mutationKey: ['checkin-transaction', { endpoint: connection.rpcEndpoint, address }],
     mutationFn: async (input: CheckInTransactionInput): Promise<CheckInTransactionResult> => {
+      if (!addressPubkey || !address) {
+        throw new Error('Wallet not connected')
+      }
+
       const fee = AppConfig.getCheckInFee(input.dayNumber)
       const badge = getDayBadge(input.dayNumber, input.habitName)
 
