@@ -1,20 +1,26 @@
-import { router } from 'expo-router'
-import { useAuth } from '@/components/auth/auth-provider'
 import { AppText } from '@/components/app-text'
+import { useAuth } from '@/components/auth/auth-provider'
+import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 import { AppConfig } from '@/constants/app-config'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { View, TouchableOpacity, StyleSheet } from 'react-native'
+import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
-import { Colors, Spacing, BorderRadius, Shadows } from '@/constants/theme'
-import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
+import { router } from 'expo-router'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function SignIn() {
   const { signIn } = useAuth()
 
   const handleConnect = async () => {
-    await signIn()
-    router.replace('/')
+    try {
+      await signIn()
+      router.replace('/')
+    } catch (error) {
+      // User cancelled the wallet connection - silently ignore
+      // This handles the CancellationException from the wallet adapter
+      console.log('Wallet connection cancelled or failed:', error)
+    }
   }
 
   return (
@@ -33,9 +39,8 @@ export default function SignIn() {
 
         {/* Main content */}
         <View style={styles.content}>
-          {/* Logo with glow effect */}
+          {/* Logo */}
           <View style={styles.logoContainer}>
-            <View style={styles.logoGlow} />
             <Image source={require('../assets/images/icon.png')} style={styles.logo} contentFit="contain" />
           </View>
 
@@ -124,16 +129,6 @@ const styles = StyleSheet.create({
   logoContainer: {
     position: 'relative',
     marginBottom: Spacing.md,
-  },
-  logoGlow: {
-    position: 'absolute',
-    top: -20,
-    left: -20,
-    right: -20,
-    bottom: -20,
-    backgroundColor: Colors.primary.glow,
-    borderRadius: 100,
-    opacity: 0.5,
   },
   logo: {
     width: 120,
