@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
 import { AppText } from '@/components/app-text'
-import { Colors, Spacing, BorderRadius, Shadows } from '@/constants/theme'
-import { HabitCategory, HABIT_CATEGORIES, TOTAL_DAYS } from './types'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
+import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
+import { LinearGradient } from 'expo-linear-gradient'
+import React, { useState } from 'react'
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native'
+import { HABIT_CATEGORIES, HabitCategory, TOTAL_DAYS } from './types'
 
 interface HabitSetupProps {
   onCreateHabit: (name: string, category: HabitCategory) => Promise<void>
@@ -113,7 +113,7 @@ export function CheckInHabitSetup({ onCreateHabit, isLoading }: HabitSetupProps)
                 Day 1
               </AppText>
               <AppText variant="label" color="primary">
-                0.01 SOL
+                0.02 SOL
               </AppText>
             </View>
             <View style={styles.feeArrow}>

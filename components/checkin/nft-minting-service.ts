@@ -101,13 +101,16 @@ export async function buildNFTMintTransaction({
     latestBlockhash: { blockhash: string; lastValidBlockHeight: number }
     minContextSlot: number
 }> {
+    // Ensure payer is a proper PublicKey instance (handles wallet adapter types)
+    const payerPublicKey = new PublicKey(payer.toBase58 ? payer.toBase58() : payer.toString())
+
     // Generate a new keypair for the NFT mint
     const mintKeypair = Keypair.generate()
 
     // Get the user's associated token account for this NFT
     const tokenAccount = await getAssociatedTokenAddress(
         mintKeypair.publicKey,
-        payer
+        payerPublicKey
     )
 
     // Get rent exemption amount for mint
@@ -129,7 +132,7 @@ export async function buildNFTMintTransaction({
     // 1. Create the mint account
     transaction.add(
         SystemProgram.createAccount({
-            fromPubkey: payer,
+            fromPubkey: payerPublicKey,
             newAccountPubkey: mintKeypair.publicKey,
             space: MINT_SIZE,
             lamports: lamportsForMint,
@@ -142,17 +145,17 @@ export async function buildNFTMintTransaction({
         createInitializeMintInstruction(
             mintKeypair.publicKey,
             0, // 0 decimals for NFT
-            payer, // Mint authority
-            payer // Freeze authority (needed for Master Edition)
+            payerPublicKey, // Mint authority
+            payerPublicKey // Freeze authority (needed for Master Edition)
         )
     )
 
     // 3. Create associated token account for the user
     transaction.add(
         createAssociatedTokenAccountInstruction(
-            payer, // Payer
+            payerPublicKey, // Payer
             tokenAccount, // ATA address
-            payer, // Owner
+            payerPublicKey, // Owner
             mintKeypair.publicKey // Mint
         )
     )
@@ -162,7 +165,7 @@ export async function buildNFTMintTransaction({
         createMintToInstruction(
             mintKeypair.publicKey, // Mint
             tokenAccount, // Destination
-            payer, // Mint authority
+            payerPublicKey, // Mint authority
             1 // Amount (1 for NFT)
         )
     )
@@ -176,9 +179,9 @@ export async function buildNFTMintTransaction({
             {
                 metadata: metadataPDA,
                 mint: mintKeypair.publicKey,
-                mintAuthority: payer,
-                payer: payer,
-                updateAuthority: payer,
+                mintAuthority: payerPublicKey,
+                payer: payerPublicKey,
+                updateAuthority: payerPublicKey,
             },
             {
                 createMetadataAccountArgsV3: {
@@ -210,9 +213,9 @@ export async function buildNFTMintTransaction({
             {
                 edition: masterEditionPDA,
                 mint: mintKeypair.publicKey,
-                updateAuthority: payer,
-                mintAuthority: payer,
-                payer: payer,
+                updateAuthority: payerPublicKey,
+                mintAuthority: payerPublicKey,
+                payer: payerPublicKey,
                 metadata: metadataPDA,
                 tokenProgram: TOKEN_PROGRAM_ID,
             },
@@ -227,7 +230,7 @@ export async function buildNFTMintTransaction({
     // 7. Transfer mint fee to treasury
     transaction.add(
         SystemProgram.transfer({
-            fromPubkey: payer,
+            fromPubkey: payerPublicKey,
             toPubkey: TREASURY_WALLET,
             lamports: Math.floor(mintFee * LAMPORTS_PER_SOL),
         })
@@ -235,7 +238,7 @@ export async function buildNFTMintTransaction({
 
     // Set transaction metadata
     transaction.recentBlockhash = latestBlockhash.blockhash
-    transaction.feePayer = payer
+    transaction.feePayer = payerPublicKey
 
     // Partially sign with the mint keypair (required for creating the mint account)
     transaction.partialSign(mintKeypair)

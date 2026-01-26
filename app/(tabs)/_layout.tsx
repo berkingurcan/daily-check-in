@@ -1,19 +1,37 @@
-import { Tabs } from 'expo-router'
-import React from 'react'
-import { StyleSheet } from 'react-native'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 import { Colors } from '@/constants/colors'
+import { Tabs } from 'expo-router'
+import React from 'react'
+import { Platform } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets()
+  // Add extra padding for Android navigation buttons
+  const bottomPadding = Platform.OS === 'android' ? Math.max(insets.bottom, 8) + 4 : insets.bottom + 4
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: {
+          backgroundColor: Colors.aurora.tabBar.background,
+          borderTopColor: Colors.aurora.tabBar.border,
+          borderTopWidth: 1,
+          paddingTop: 8,
+          paddingBottom: bottomPadding,
+          height: 60 + bottomPadding,
+        },
         tabBarActiveTintColor: Colors.aurora.tabBar.active,
         tabBarInactiveTintColor: Colors.aurora.tabBar.inactive,
-        tabBarLabelStyle: styles.tabBarLabel,
-        tabBarItemStyle: styles.tabBarItem,
+        tabBarLabelStyle: {
+          fontFamily: 'Inter_500Medium',
+          fontSize: 11,
+          marginTop: 4,
+        },
+        tabBarItemStyle: {
+          paddingTop: 4,
+        },
       }}
     >
       {/* The index redirects to the checkin screen */}
@@ -27,7 +45,12 @@ export default function TabLayout() {
               size={26}
               name="checkmark.circle.fill"
               color={color}
-              style={focused ? styles.activeIcon : undefined}
+              style={focused ? {
+                shadowColor: Colors.aurora.primary.default,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.6,
+                shadowRadius: 8,
+              } : undefined}
             />
           ),
         }}
@@ -41,7 +64,12 @@ export default function TabLayout() {
               size={26}
               name="wallet.pass.fill"
               color={color}
-              style={focused ? styles.activeIcon : undefined}
+              style={focused ? {
+                shadowColor: Colors.aurora.primary.default,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.6,
+                shadowRadius: 8,
+              } : undefined}
             />
           ),
         }}
@@ -55,7 +83,12 @@ export default function TabLayout() {
               size={26}
               name="gearshape.fill"
               color={color}
-              style={focused ? styles.activeIcon : undefined}
+              style={focused ? {
+                shadowColor: Colors.aurora.primary.default,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.6,
+                shadowRadius: 8,
+              } : undefined}
             />
           ),
         }}
@@ -72,28 +105,3 @@ export default function TabLayout() {
     </Tabs>
   )
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: Colors.aurora.tabBar.background,
-    borderTopColor: Colors.aurora.tabBar.border,
-    borderTopWidth: 1,
-    paddingTop: 8,
-    paddingBottom: 4,
-    height: 88,
-  },
-  tabBarLabel: {
-    fontFamily: 'Inter_500Medium',
-    fontSize: 11,
-    marginTop: 4,
-  },
-  tabBarItem: {
-    paddingTop: 4,
-  },
-  activeIcon: {
-    shadowColor: Colors.aurora.primary.default,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-  },
-})

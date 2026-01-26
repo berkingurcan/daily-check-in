@@ -1,10 +1,9 @@
-import React from 'react'
-import { TouchableOpacity, View, StyleSheet, ActivityIndicator } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
 import { AppText } from '@/components/app-text'
-import { Colors, Spacing, BorderRadius, Shadows, Components } from '@/constants/theme'
-import { AppConfig } from '@/constants/app-config'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
+import { BorderRadius, Colors, Components, Shadows, Spacing } from '@/constants/theme'
+import { LinearGradient } from 'expo-linear-gradient'
+import React from 'react'
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native'
 
 interface CheckInButtonProps {
   dayNumber: number
@@ -15,7 +14,6 @@ interface CheckInButtonProps {
 }
 
 export function CheckInButton({ dayNumber, onCheckIn, isLoading, isCompleted, isDisabled }: CheckInButtonProps) {
-  const fee = AppConfig.getCheckInFee(dayNumber)
 
   if (isCompleted) {
     return (
@@ -82,18 +80,6 @@ export function CheckInButton({ dayNumber, onCheckIn, isLoading, isCompleted, is
           )}
         </LinearGradient>
       </TouchableOpacity>
-
-      <View style={styles.feeContainer}>
-        <View style={styles.feeRow}>
-          <UiIconSymbol name="bolt.fill" size={14} color={Colors.primary.default} />
-          <AppText variant="caption" color="secondary">
-            Transaction Fee
-          </AppText>
-        </View>
-        <AppText variant="label" style={styles.feeAmount}>
-          {fee.toFixed(2)} SOL
-        </AppText>
-      </View>
     </View>
   )
 }
@@ -180,23 +166,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
     marginTop: Spacing.xs,
-  },
-  feeContainer: {
-    backgroundColor: Colors.surface.default,
-    paddingHorizontal: Spacing.xl,
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    alignItems: 'center',
-    gap: Spacing.xs,
-    borderWidth: 1,
-    borderColor: Colors.border.subtle,
-  },
-  feeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  feeAmount: {
-    color: Colors.primary.default,
   },
 })

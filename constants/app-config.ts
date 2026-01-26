@@ -1,6 +1,6 @@
-import { clusterApiUrl, PublicKey } from '@solana/web3.js'
 import { Cluster } from '@/components/cluster/cluster'
 import { ClusterNetwork } from '@/components/cluster/cluster-network'
+import { clusterApiUrl, PublicKey } from '@solana/web3.js'
 
 const getNetworkFromEnv = (): ClusterNetwork => {
   const network = process.env.EXPO_PUBLIC_SOLANA_NETWORK || 'devnet'

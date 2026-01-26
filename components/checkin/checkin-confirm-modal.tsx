@@ -72,24 +72,12 @@ export function CheckInConfirmModal({
                 You are about to mint an NFT badge and record your check-in on the blockchain.
               </AppText>
 
-              {/* Fee card */}
+              {/* Info message */}
               <View style={styles.feeCard}>
-                <View style={styles.feeRow}>
-                  <View style={styles.feeLabel}>
-                    <UiIconSymbol name="bolt.fill" size={16} color={Colors.primary.default} />
-                    <AppText variant="bodySm" color="secondary">
-                      NFT Mint Fee
-                    </AppText>
-                  </View>
-                  <AppText variant="h4" style={styles.feeAmount}>
-                    {fee.toFixed(4)} SOL
-                  </AppText>
-                </View>
-                <View style={styles.feeDivider} />
                 <View style={styles.feeInfo}>
                   <UiIconSymbol name="info.circle" size={14} color={Colors.text.tertiary} />
                   <AppText variant="caption" color="tertiary">
-                    Minting an NFT badge + commission fee (increases daily)
+                    Minting an NFT badge requires network transaction fees
                   </AppText>
                 </View>
               </View>
@@ -254,11 +242,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background.secondary,
     paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: Colors.border.subtle,
+    minHeight: 48,
   },
   cancelButtonText: {
     color: Colors.text.secondary,
@@ -274,6 +264,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: Spacing.xs,
     paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    minHeight: 48,
   },
   confirmButtonText: {
     color: Colors.text.inverse,

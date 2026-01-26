@@ -1,11 +1,12 @@
-import { ScrollView, StyleSheet, View } from 'react-native'
-import { SettingsUiCluster } from '@/components/settings/settings-ui-cluster'
+import { AppPage } from '@/components/app-page'
 import { AppText } from '@/components/app-text'
 import { SettingsAppConfig } from '@/components/settings/settings-app-config'
+import { SettingsResetChallenge } from '@/components/settings/settings-reset-challenge'
 import { SettingsUiAccount } from '@/components/settings/settings-ui-account'
-import { AppPage } from '@/components/app-page'
-import { Colors, Spacing, BorderRadius } from '@/constants/theme'
+import { SettingsUiCluster } from '@/components/settings/settings-ui-cluster'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
+import { BorderRadius, Colors, Spacing } from '@/constants/theme'
+import { ScrollView, StyleSheet, View } from 'react-native'
 
 export default function TabSettingsScreen() {
   return (
@@ -17,6 +18,7 @@ export default function TabSettingsScreen() {
 
         <SettingsUiAccount />
         <SettingsUiCluster />
+        <SettingsResetChallenge />
         <SettingsAppConfig />
 
         <View style={styles.footer}>
