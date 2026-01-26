@@ -7,10 +7,9 @@ import { AppText } from '@/components/app-text'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
 import * as Linking from 'expo-linking'
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
     Animated,
-    InteractionManager,
     Modal,
     Pressable,
     StyleSheet,
@@ -65,16 +64,17 @@ export function MintSuccessModal({
             scaleAnim.setValue(0.95)
             fadeAnim.setValue(0)
 
+            // Use timing instead of spring for predictable, faster animations
+            // This prevents Fabric race conditions during rapid state changes
             animationRef.current = Animated.parallel([
-                Animated.spring(scaleAnim, {
+                Animated.timing(scaleAnim, {
                     toValue: 1,
-                    tension: 200,
-                    friction: 20,
+                    duration: 150,
                     useNativeDriver: true,
                 }),
                 Animated.timing(fadeAnim, {
                     toValue: 1,
-                    duration: 200,
+                    duration: 150,
                     useNativeDriver: true,
                 }),
             ])

@@ -9,6 +9,7 @@ import { View } from 'react-native'
 import { useTrackLocations } from '@/hooks/use-track-locations'
 import { AppSplashController } from '@/components/app-splash-controller'
 import { useAuth } from '@/components/auth/auth-provider'
+import { FabricErrorBoundary } from '@/components/fabric-error-boundary'
 import {
   useFonts,
   SpaceGrotesk_400Regular,
@@ -52,12 +53,14 @@ export default function RootLayout() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <AppProviders>
-        <AppSplashController />
-        <RootNavigator />
-        <StatusBar style="light" />
-      </AppProviders>
-      <PortalHost />
+      <FabricErrorBoundary>
+        <AppProviders>
+          <AppSplashController />
+          <RootNavigator />
+          <StatusBar style="light" />
+        </AppProviders>
+        <PortalHost />
+      </FabricErrorBoundary>
     </View>
   )
 }

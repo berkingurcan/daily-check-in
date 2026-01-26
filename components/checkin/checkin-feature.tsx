@@ -161,6 +161,13 @@ export function CheckInFeature() {
       if (!isMounted.current) return
 
       setShowConfirmModal(false)
+      setIsConfirming(false)
+
+      // Delay showing success modal to allow confirm modal animation to complete
+      // This prevents Fabric race conditions from rapid modal transitions
+      await new Promise((resolve) => setTimeout(resolve, 200))
+
+      if (!isMounted.current) return
 
       // Show mint success modal
       const badge = getDayBadge(dayNumber, habit.name)
@@ -177,9 +184,6 @@ export function CheckInFeature() {
           text: error?.message || 'Check-in failed. Please try again.',
           duration: Snackbar.LENGTH_LONG,
         })
-      }
-    } finally {
-      if (isMounted.current) {
         setIsConfirming(false)
       }
     }

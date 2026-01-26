@@ -9,10 +9,9 @@ import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
 import { LAMPORTS_PER_SOL } from '@solana/web3.js'
 import * as Clipboard from 'expo-clipboard'
 import * as Linking from 'expo-linking'
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef } from 'react'
 import {
     Animated,
-    InteractionManager,
     Modal,
     Pressable,
     StyleSheet,
@@ -65,16 +64,17 @@ export function InsufficientBalanceModal({
             scaleAnim.setValue(0.95)
             fadeAnim.setValue(0)
 
+            // Use timing instead of spring for predictable, faster animations
+            // This prevents Fabric race conditions during rapid state changes
             animationRef.current = Animated.parallel([
-                Animated.spring(scaleAnim, {
+                Animated.timing(scaleAnim, {
                     toValue: 1,
-                    tension: 200,
-                    friction: 20,
+                    duration: 150,
                     useNativeDriver: true,
                 }),
                 Animated.timing(fadeAnim, {
                     toValue: 1,
-                    duration: 200,
+                    duration: 150,
                     useNativeDriver: true,
                 }),
             ])

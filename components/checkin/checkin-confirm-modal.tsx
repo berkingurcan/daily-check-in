@@ -1,7 +1,6 @@
 import { AppText } from '@/components/app-text'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
 import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
-import { BlurView } from 'expo-blur'
 import { LinearGradient } from 'expo-linear-gradient'
 import React from 'react'
 import { ActivityIndicator, Modal, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
@@ -27,7 +26,6 @@ export function CheckInConfirmModal({
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={loading ? undefined : onClose}>
         <View style={styles.overlay}>
-          <BlurView intensity={25} tint="dark" style={styles.blur} />
           <TouchableWithoutFeedback>
             <View style={styles.modalContainer}>
               {/* Gradient accent at top */}
@@ -125,14 +123,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  },
-  blur: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
   },
   modalContainer: {
     backgroundColor: Colors.surface.default,

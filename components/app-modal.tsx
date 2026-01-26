@@ -1,6 +1,5 @@
 import React from 'react'
 import { Modal, View, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, ActivityIndicator } from 'react-native'
-import { BlurView } from 'expo-blur'
 import { LinearGradient } from 'expo-linear-gradient'
 import { AppText } from '@/components/app-text'
 import { UiIconSymbol } from '@/components/ui/ui-icon-symbol'
@@ -139,7 +138,6 @@ export function AppModal({
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
         <View style={styles.overlay}>
-          <BlurView intensity={20} tint="dark" style={styles.blur} />
           <TouchableWithoutFeedback>
             <View style={styles.modalContainer}>
               {/* Close button */}
@@ -236,14 +234,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-  },
-  blur: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
   },
   modalContainer: {
     backgroundColor: Colors.surface.default,

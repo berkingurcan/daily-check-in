@@ -5,7 +5,6 @@ import { AppConfig } from '@/constants/app-config'
 import { BorderRadius, Colors, Shadows, Spacing } from '@/constants/theme'
 import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
-import { router } from 'expo-router'
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -15,7 +14,8 @@ export default function SignIn() {
   const handleConnect = async () => {
     try {
       await signIn()
-      router.replace('/')
+      // Navigation is handled automatically by Stack.Protected based on auth state
+      // No explicit navigation needed - the debounced auth will trigger navigation
     } catch (error) {
       // User cancelled the wallet connection - silently ignore
       // This handles the CancellationException from the wallet adapter
