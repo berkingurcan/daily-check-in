@@ -168,9 +168,8 @@ export async function buildNFTMintTransaction({
     )
 
     // 5. Create Metaplex Metadata
-    // Note: For production, you would upload metadata JSON to IPFS/Arweave
-    // For now, we use a placeholder URI - in production, replace with actual hosted metadata
-    const metadataUri = `https://dailycheckin.app/metadata/day${dayNumber}.json`
+    // Metadata hosted on IPFS via Pinata
+    const metadataUri = `https://rose-smoggy-sparrow-317.mypinata.cloud/ipfs/bafybeibc3tx5ega3646dbmztvmaw3rb4ucssl2iiaz62rrb47nghpb3fau/day${dayNumber}.json`
 
     transaction.add(
         createCreateMetadataAccountV3Instruction(
