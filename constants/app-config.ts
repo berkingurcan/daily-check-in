@@ -2,22 +2,7 @@ import { Cluster } from '@/components/cluster/cluster'
 import { ClusterNetwork } from '@/components/cluster/cluster-network'
 import { clusterApiUrl, PublicKey } from '@solana/web3.js'
 
-const getNetworkFromEnv = (): ClusterNetwork => {
-  const network = process.env.EXPO_PUBLIC_SOLANA_NETWORK || 'devnet'
-  switch (network) {
-    case 'mainnet-beta':
-      return ClusterNetwork.Mainnet
-    case 'testnet':
-      return ClusterNetwork.Testnet
-    default:
-      return ClusterNetwork.Devnet
-  }
-}
-
 const getEndpoint = (network: ClusterNetwork): string => {
-  const customEndpoint = process.env.EXPO_PUBLIC_CUSTOM_RPC_ENDPOINT
-  if (customEndpoint) return customEndpoint
-
   switch (network) {
     case ClusterNetwork.Mainnet:
       return clusterApiUrl('mainnet-beta')
@@ -33,10 +18,10 @@ export class AppConfig {
   static uri = 'https://dailycheckin.app'
   static symbol = 'DCIN'
 
-  static defaultNetwork = getNetworkFromEnv()
+  static defaultNetwork = ClusterNetwork.Mainnet
 
   static commissionWallet = new PublicKey(
-    process.env.EXPO_PUBLIC_COMMISSION_WALLET || '11111111111111111111111111111111',
+    '9ny4NhFAkJWEwU1VSggsz1fbiwEn3o7GEXZ8NvdcDQhh'
   )
 
   static totalDays = 12
